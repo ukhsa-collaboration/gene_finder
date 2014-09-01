@@ -1,0 +1,283 @@
+<ngs_sample id="29190_H14278008107-942-1">
+  <workflow value="research_typing" version="1-0"/>
+  <coverage_control value="81.95"/>
+  <results>
+    <result type="gene" value="sak">
+      <type type="mode" value="variant"/>
+      <quality type="alterations" value="5:S-G;159:V-I"/>
+      <type type="detection" value="present"/>
+      <quality type="Coverage" value="100.0"/>
+      <quality type="Homology" value="99.59"/>
+      <quality type="Depth" value="60.31:32:87"/>
+      <quality type="coverage_distribution" value="['1-492']"/>
+      <quality type="Mix" value="None"/>
+      <quality type="large_indels" value="None"/>
+      <quality type="mismatch" value="13:A-G;475:G-A"/>
+    </result>
+    <result type="gene" value="scn">
+      <type type="mode" value="variant"/>
+      <quality type="alterations" value="None"/>
+      <type type="detection" value="present"/>
+      <quality type="Coverage" value="100.0"/>
+      <quality type="Homology" value="100.0"/>
+      <quality type="Depth" value="43.74:26:64"/>
+      <quality type="coverage_distribution" value="['1-351']"/>
+      <quality type="Mix" value="None"/>
+      <quality type="large_indels" value="None"/>
+      <quality type="mismatch" value="None"/>
+    </result>
+    <result type="gene" value="lukM-F">
+      <type type="mode" value="variant"/>
+      <quality type="alterations" value="ND"/>
+      <type type="detection" value="absent"/>
+      <quality type="Coverage" value="21.5"/>
+      <quality type="Homology" value="17.23"/>
+      <quality type="Depth" value="27.45:6:107"/>
+      <quality type="coverage_distribution" value="['563-626', '127-187', '370-430']"/>
+      <quality type="Mix" value="193:A-G-0.83-0.17"/>
+      <quality type="large_indels" value="[(88, '2:100.0'), (267, '1:100.0'), (370, '94:100.0'), (430, '51:100.0'), (505, '1:100.0'), (563, '15:93.33'), (626, '10:100.0'), (742, '1:100.0'), (827, '1:100.0')]"/>
+      <quality type="mismatch" value="96:T-A;99:C-T;104:A-T;105:G-C;114:G-A;120:C-T;124:A-G;126:C-T;132:G-A;141:G-T;144:T-A;151:T-G;159:T-A;162:C-T;168:A-C;177:T-A;180:A-G;184:C-T;189:T-A;192:T-C;193:A-R;198:T-C;201:T-C;207:C-T;225:C-T;228:A-T;375:C-T;378:G-A;412:C-A;414:A-C;417:A-T;423:T-C;427:T-A;567:C-T;576:C-A;579:G-A;591:C-T;609:A-G;612:A-T;618:C-A;619:A-C"/>
+    </result>
+    <result type="gene" value="rpoB_2">
+      <type type="mode" value="mutant"/>
+      <quality type="mutation" value="None"/>
+      <type type="detection" value="present"/>
+      <quality type="Coverage" value="100.0"/>
+      <quality type="Homology" value="99.41"/>
+      <quality type="Depth" value="132.35:28:239"/>
+      <quality type="coverage_distribution" value="['1-3548']"/>
+      <quality type="Mix" value="None"/>
+      <quality type="large_indels" value="None"/>
+      <quality type="mismatch" value="894:G-A;958:G-A;1011:T-A;1506:A-G;1803:T-G;1845:A-G;1974:T-C;1998:A-T;2040:T-C;2181:T-A;2301:T-A;2304:T-C;2682:T-C;2760:T-C;2829:C-T;2847:T-C;2859:T-C;2949:T-A;2958:C-T;3078:C-T;3159:T-A"/>
+    </result>
+    <result type="gene" value="seg">
+      <type type="mode" value="variant"/>
+      <quality type="alterations" value="None"/>
+      <type type="detection" value="present"/>
+      <quality type="Coverage" value="100.0"/>
+      <quality type="Homology" value="100.0"/>
+      <quality type="Depth" value="42.85:19:80"/>
+      <quality type="coverage_distribution" value="['1-777']"/>
+      <quality type="Mix" value="None"/>
+      <quality type="large_indels" value="None"/>
+      <quality type="mismatch" value="None"/>
+    </result>
+    <result type="gene" value="sed">
+      <type type="mode" value="variant"/>
+      <quality type="alterations" value="ND"/>
+      <type type="detection" value="absent"/>
+      <quality type="Coverage" value="2.6"/>
+      <quality type="Homology" value="2.38"/>
+      <quality type="Depth" value="2.83:2:3"/>
+      <quality type="coverage_distribution" value="['24-52']"/>
+      <quality type="Mix" value="None"/>
+      <quality type="large_indels" value="[(24, '3:100.0'), (52, '3:100.0')]"/>
+      <quality type="mismatch" value="45:T-G;47:C-T"/>
+    </result>
+    <result type="gene" value="sec">
+      <type type="mode" value="variant"/>
+      <quality type="alterations" value="41:A-S;43:K-E;47:L-T;49:E-G;53:V-Y;66:K-M;99:G-D"/>
+      <type type="detection" value="present"/>
+      <quality type="Coverage" value="100.0"/>
+      <quality type="Homology" value="98.13"/>
+      <quality type="Depth" value="58.57:38:82"/>
+      <quality type="coverage_distribution" value="['1-801']"/>
+      <quality type="Mix" value="None"/>
+      <quality type="large_indels" value="None"/>
+      <quality type="mismatch" value="121:G-T;123:G-A;127:A-G;129:A-G;132:C-T;139:T-A;140:T-C;146:A-G;147:A-T;157:G-T;158:T-A;197:A-T;255:G-A;296:G-A;402:C-T"/>
+    </result>
+    <result type="gene" value="seb">
+      <type type="mode" value="variant"/>
+      <quality type="alterations" value="ND"/>
+      <type type="detection" value="absent"/>
+      <quality type="Coverage" value="28.5"/>
+      <quality type="Homology" value="22.47"/>
+      <quality type="Depth" value="16.7:4:53"/>
+      <quality type="coverage_distribution" value="['15-57', '610-794']"/>
+      <quality type="Mix" value="None"/>
+      <quality type="large_indels" value="[(15, '5:100.0'), (187, '1:100.0'), (604, '3:100.0'), (794, '12:100.0')]"/>
+      <quality type="mismatch" value="19:G-A;25:C-T;27:T-C;48:G-T;58:A-C;62:A-T;75:T-A;84:A-G;96:T-C;101:A-C;102:A-G;121:G-T;123:G-A;127:A-G;129:A-G;132:C-T;139:T-A;140:T-C;146:A-G;147:A-T;609:A-G;617:A-G;618:C-T;624:T-A;633:G-A;642:T-A;651:A-T;656:G-A;658:G-A;665:G-C;666:C-T;678:C-T;696:A-C;702:A-G;735:T-C;738:T-C;745:T-A;746:T-C;760:G-A;761:A-G;771:T-A;777:T-C;778:T-C;780:T-C;786:G-A"/>
+    </result>
+    <result type="gene" value="dfr_C">
+      <type type="mode" value="variant"/>
+      <quality type="alterations" value="ND"/>
+      <type type="detection" value="absent"/>
+      <quality type="Coverage" value="9.7"/>
+      <quality type="Homology" value="9.26"/>
+      <quality type="Depth" value="10.17:7:12"/>
+      <quality type="coverage_distribution" value="['53-99']"/>
+      <quality type="Mix" value="None"/>
+      <quality type="large_indels" value="[(53, '11:100.0'), (99, '8:100.0'), (265, '1:100.0'), (311, '1:100.0')]"/>
+      <quality type="mismatch" value="73:T-C;87:A-G"/>
+    </result>
+    <result type="gene" value="msr(A)">
+      <type type="mode" value="variant"/>
+      <quality type="alterations" value="ND"/>
+      <type type="detection" value="absent"/>
+      <quality type="Coverage" value="2.4"/>
+      <quality type="Homology" value="2.18"/>
+      <quality type="Depth" value="21.77:19:23"/>
+      <quality type="coverage_distribution" value="[]"/>
+      <quality type="Mix" value="None"/>
+      <quality type="large_indels" value="[(368, '22:100.0'), (402, '20:100.0')]"/>
+      <quality type="mismatch" value="390:A-T;393:T-C;399:G-A"/>
+    </result>
+    <result type="gene" value="sei">
+      <type type="mode" value="variant"/>
+      <quality type="alterations" value="103:Y-F;128:K-X;130:K-X;137:I-X;138:A-X;142:K-X;151:V-X"/>
+      <type type="detection" value="present"/>
+      <quality type="Coverage" value="100.0"/>
+      <quality type="Homology" value="97.67"/>
+      <quality type="Depth" value="48.46:11:108"/>
+      <quality type="coverage_distribution" value="['1-729']"/>
+      <quality type="Mix" value="381:A-C-0.33-0.67;382:A-G-0.67-0.33;388:A-C-0.66-0.34;393:A-T-0.7-0.3;396:A-T-0.3-0.7;409:A-G-0.72-0.28;412:T-G-0.28-0.72;424:A-G-0.31-0.69;426:A-G-0.73-0.27;427:C-T-0.73-0.27;451:A-G-0.26-0.74;452:C-T-0.28-0.72;462:A-G-0.29-0.71;471:A-T-0.22-0.78;483:C-T-0.82-0.18"/>
+      <quality type="large_indels" value="None"/>
+      <quality type="mismatch" value="156:C-T;308:A-T;381:C-M;382:A-R;388:A-M;393:A-W;396:T-W;409:A-R;412:G-K;424:A-R;426:A-R;427:C-Y;451:G-R;452:T-Y;462:A-R;471:T-W;483:C-Y"/>
+    </result>
+    <result type="gene" value="chp">
+      <type type="mode" value="variant"/>
+      <quality type="alterations" value="84:S-A"/>
+      <type type="detection" value="present"/>
+      <quality type="Coverage" value="100.0"/>
+      <quality type="Homology" value="99.78"/>
+      <quality type="Depth" value="38.04:14:75"/>
+      <quality type="coverage_distribution" value="['1-450']"/>
+      <quality type="Mix" value="None"/>
+      <quality type="large_indels" value="None"/>
+      <quality type="mismatch" value="250:T-G"/>
+    </result>
+    <result type="gene" value="blaZ">
+      <type type="mode" value="variant"/>
+      <quality type="alterations" value="9:A-V;10:I-M;86:I-V;119:A-T;193:E-K;196:K-N;203:L-F;207:S-N;217:S-P;220:C-Y"/>
+      <type type="detection" value="present"/>
+      <quality type="Coverage" value="100.0"/>
+      <quality type="Homology" value="97.87"/>
+      <quality type="Depth" value="382.5:238:551"/>
+      <quality type="coverage_distribution" value="['1-846']"/>
+      <quality type="Mix" value="None"/>
+      <quality type="large_indels" value="None"/>
+      <quality type="mismatch" value="26:C-T;30:T-G;256:A-G;321:T-C;355:G-A;399:T-C;492:A-G;519:A-G;534:T-C;577:G-A;582:C-T;588:A-T;609:A-T;620:G-A;627:T-C;642:C-T;649:T-C;659:G-A"/>
+    </result>
+    <result type="gene" value="gyrA_4">
+      <type type="mode" value="mutant"/>
+      <quality type="mutation" value="None"/>
+      <type type="detection" value="present"/>
+      <quality type="Coverage" value="100.0"/>
+      <quality type="Homology" value="96.32"/>
+      <quality type="Depth" value="129.52:39:206"/>
+      <quality type="coverage_distribution" value="['1-2661']"/>
+      <quality type="Mix" value="None"/>
+      <quality type="large_indels" value="None"/>
+      <quality type="mismatch" value="96:T-G;330:T-C;516:A-G;525:C-T;528:G-T;543:G-C;567:A-T;582:T-A;585:A-G;591:C-T;603:C-T;627:A-G;633:A-G;681:G-A;687:T-A;699:A-T;732:T-C;741:A-G;743:T-A;744:T-A;759:A-C;762:C-T;765:A-T;810:G-A;813:T-A;843:T-A;846:T-C;900:T-A;1020:C-T;1197:T-C;1371:A-C;1374:C-T;1383:T-C;1401:G-A;1413:T-C;1440:C-T;1449:G-T;1458:A-T;1466:C-A;1485:C-T;1491:G-A;1494:C-T;1501:T-C;1503:A-C;1521:A-T;1530:T-A;1531:T-C;1533:G-A;1578:T-C;1596:T-C;1623:G-A;1626:A-G;1632:T-C;1635:T-C;1638:C-T;1647:G-A;1653:T-G;1668:C-T;1701:A-T;1704:C-T;1710:A-T;1740:A-G;1792:G-A;1836:C-T;1854:A-G;1893:C-T;1905:A-T;1935:C-T;1947:T-C;1951:T-C;1965:T-C;1977:T-C;1992:G-A;1995:T-C;2002:T-G;2004:A-G;2037:A-G;2052:C-T;2064:G-A;2134:G-A;2316:C-A;2436:A-G;2445:T-A;2448:A-C;2450:T-A;2460:T-C;2501:G-A;2547:T-G;2553:G-A;2559:T-A;2570:A-C;2574:T-C;2613:T-C;2628:T-C;2649:A-T"/>
+    </result>
+    <result type="gene" value="lukPV-F">
+      <type type="mode" value="variant"/>
+      <quality type="alterations" value="ND"/>
+      <type type="detection" value="absent"/>
+      <quality type="Coverage" value="35.3"/>
+      <quality type="Homology" value="28.73"/>
+      <quality type="Depth" value="45.49:7:110"/>
+      <quality type="coverage_distribution" value="['108-239', '340-458', '559-645']"/>
+      <quality type="Mix" value="None"/>
+      <quality type="large_indels" value="[(82, '1:100.0'), (100, '8:87.5'), (239, '40:87.5'), (282, '3:100.0'), (301, '1:100.0'), (333, '4:75.0'), (340, '58:93.1'), (405, '104:82.69'), (458, '9:100.0'), (559, '59:100.0'), (645, '41:95.12'), (655, '1:100.0'), (781, '1:100.0'), (821, '1:100.0')]"/>
+      <quality type="mismatch" value="105:G-A;108:T-A;118:A-G;126:G-A;135:A-T;138:T-A;141:A-T;145:T-G;153:C-A;159:G-A;162:A-C;171:T-A;183:T-A;186:T-C;192:T-C;195:T-C;222:A-T;226:A-G;228:A-G;231:C-T;240:T-A;243:A-T;246:C-T;250:T-A;252:T-C;255:T-A;258:C-T;263:C-G;276:A-T;339:T-A;348:C-T;351:A-G;354:A-T;360:T-A;366:T-C;402:A-T;406:C-A;408:A-C;411:G-T;412:G-T;417:T-C;421:T-A;423:T-A;425:A-T;426:T-C;432:A-T;435:T-C;440:A-G;450:C-T;453:C-T;566:A-G;570:T-A;603:A-G;606:A-T;612:C-A;613:A-C;621:T-C;623:A-T;624:T-C;627:T-C;628:T-C;633:T-A;646:A-C;651:T-C"/>
+    </result>
+    <result type="gene" value="dfrB_1">
+      <type type="mode" value="mutant"/>
+      <quality type="mutation" value="76:V-A"/>
+      <type type="detection" value="present"/>
+      <quality type="Coverage" value="100.0"/>
+      <quality type="Homology" value="99.17"/>
+      <quality type="Depth" value="81.95:37:112"/>
+      <quality type="coverage_distribution" value="['1-480']"/>
+      <quality type="Mix" value="None"/>
+      <quality type="large_indels" value="None"/>
+      <quality type="mismatch" value="227:T-C;273:T-C;354:T-C;432:G-A"/>
+    </result>
+    <result type="gene" value="lukPV-S">
+      <type type="mode" value="variant"/>
+      <quality type="alterations" value="ND"/>
+      <type type="detection" value="absent"/>
+      <quality type="Coverage" value="22.9"/>
+      <quality type="Homology" value="18.96"/>
+      <quality type="Depth" value="18.84:5:86"/>
+      <quality type="coverage_distribution" value="['512-556', '348-394', '445-511']"/>
+      <quality type="Mix" value="None"/>
+      <quality type="large_indels" value="[(169, '2:100.0'), (215, '1:100.0'), (305, '1:100.0'), (331, '4:75.0'), (428, '1:100.0'), (445, '11:100.0'), (572, '5:100.0'), (649, '1:100.0'), (722, '1:100.0'), (859, '1:100.0'), (880, '72:98.63'), (915, '60:98.39'), (937, '1:100.0')]"/>
+      <quality type="mismatch" value="174:T-C;180:G-A;192:T-A;204:G-A;336:A-G;339:T-A;343:C-T;345:C-T;351:A-T;360:A-C;369:A-T;384:A-T;392:T-C;394:A-G;452:C-T;453:A-C;459:T-C;461:A-G;465:T-C;471:T-C;474:T-C;477:T-C;480:A-T;502:C-A;511:A-G;513:C-T;515:G-C;526:C-A;531:A-G;534:T-C;537:A-T;541:A-G;547:C-A;556:A-G;558:A-G;564:T-A;909:T-A"/>
+    </result>
+    <result type="gene" value="23s">
+      <type type="mode" value="regulator"/>
+      <quality type="modifications" value="None"/>
+      <type type="detection" value="present"/>
+      <quality type="Coverage" value="100.0"/>
+      <quality type="Homology" value="99.83"/>
+      <quality type="Depth" value="695.64:345:1059"/>
+      <quality type="coverage_distribution" value="['1-2926']"/>
+      <quality type="Mix" value="68:A-G-0.32-0.68;435:A-G-0.17-0.83;596:A-G-0.17-0.83;1011:A-G-0.38-0.62"/>
+      <quality type="large_indels" value="None"/>
+      <quality type="mismatch" value="68:G-R;435:G-R;596:G-R;1011:G-R;2926:A-T"/>
+    </result>
+    <result type="gene" value="seu_1">
+      <type type="mode" value="variant"/>
+      <quality type="alterations" value="25:R-K;58:A-S;72:N-X;73:G-X;74:S--;75:K--;76:I-X;77:D-X;78:G-M;79:S-V;80:K-L;81:early_stop;82:L-F;84:T-Q;85:E-N;86:F-L;87:N-I;88:N-I;90:S-A;91:L-F;92:S-R;93:D-I;94:K-N;95:Y-I;97:N-I;99:N-T;100:V-I;101:D-C;103:F-G;104:G-Q;106:N-I;107:Y-I;108:Y-I;110:Q-A;111:C-I;112:Y-F;113:F-H;114:S-R;115:A-I;116:D-I;117:N-W;118:M-N;119:E-M;120:L-M;121:N-V;123:G--;124:R--;126:I-K;127:E-K;128:K-R;129:T-V;132:Y-A;133:--P;134:G-S;135:V-M;136:T-M;138:H-I;139:D-K;140:G-I;141:N-K;142:Q-I;144:D-Q;145:K-L;146:N-I;147:N-T;149:T-I;150:D-I;151:N-S;152:S-L;153:H-K;154:N-F;155:I-M;156:L-K;157:I-T;158:K-R;159:V-E;160:Y-I;161:E-H;162:N-Y;163:E-L;164:R-L;165:N-I;166:T-Y;168:S-L;169:F-I;170:D-R;171:I-K;172:S-T;173:T-Q;174:N-H;177:N-I;179:T-K;180:A-L;181:Q-E;182:E-T;184:D-Y;185:Y-L;186:K-S;187:V-I;188:R-K;189:N-I;191:L-M;192:L-N;193:K-L;194:H-T;195:K-V;196:N-R;198:Y-M;199:E-R;200:F-L;201:N-A;202:S-I;204:P-L;205:Y-S;206:E-K;207:T-E;208:G-V;209:Y-V;211:K-L;213:I-G;214:E--;215:G--;216:N--;217:S--;218:H--;219:S--;220:F--;221:W--;222:Y--;223:D-M;224:M-I;225:M-C;226:P-L;227:E-N;228:S-L;229:G-V;230:E-K;231:K-N;233:Y-I;234:P-R;235:T-L;236:K-N;237:Y-I;238:L-Y;239:L-F;241:Y-M;242:N--;243:D--;244:N--;245:K--;246:T-I;247:V-I;248:E-K;249:S-Q;250:K-L;251:S-R;252:I-V;254:V-L;255:E-L;256:V-M;257:H-K;258:L-F;259:T-I;260:K-P;261:--N"/>
+      <type type="detection" value="present"/>
+      <quality type="Coverage" value="100.0"/>
+      <quality type="Homology" value="95.67"/>
+      <quality type="Depth" value="29.53:5:56"/>
+      <quality type="coverage_distribution" value="['1-786']"/>
+      <quality type="Mix" value="None"/>
+      <quality type="large_indels" value="None"/>
+      <quality type="mismatch" value="74:G-A;141:C-T;172:G-T;180:G-A;215:A-N;216:T-N;217:G-N;218:G-N;220:T-N;221:C-N;222:T-N;223:A-N;224:A-N;225:A-N;226:A-N;285:C-T;343:G-T;373:C-T;442:C-T;443:T-C;477:A-T;480:C-T;489:A-G;495:C-T;496:A-T;514:T-C;519:C-T;603:T-C;647:A-G;649:A-G;657:A-T;670:A-T;688:G-A;735:G-A"/>
+    </result>
+    <result type="gene" value="lukM">
+      <type type="mode" value="variant"/>
+      <quality type="alterations" value="ND"/>
+      <type type="detection" value="absent"/>
+      <quality type="Coverage" value="26.6"/>
+      <quality type="Homology" value="20.6"/>
+      <quality type="Depth" value="23.28:4:56"/>
+      <quality type="coverage_distribution" value="['164-260', '291-424']"/>
+      <quality type="Mix" value="165:A-G-0.5-0.5;174:C-T-0.22-0.78;183:C-T-0.18-0.82;186:C-T-0.18-0.82;192:A-G-0.83-0.17;195:A-G-0.83-0.17;219:C-T-0.79-0.21;220:C-T-0.79-0.21;222:A-G-0.79-0.21;223:A-G-0.21-0.79;225:C-T-0.21-0.79;226:T-G-0.21-0.79;228:A-T-0.21-0.79;343:C-T-0.67-0.33;344:C-T-0.33-0.67;345:A-T-0.67-0.33;347:A-T-0.33-0.67;348:T-G-0.33-0.67"/>
+      <quality type="large_indels" value="[(154, '2:100.0'), (178, '43:75.56'), (260, '15:100.0'), (291, '11:100.0'), (355, '55:89.09'), (383, '55:83.64'), (442, '2:100.0'), (702, '1:100.0'), (801, '1:100.0')]"/>
+      <quality type="mismatch" value="162:T-C;165:A-R;168:A-T;174:T-Y;175:G-A;183:T-Y;186:T-Y;189:C-T;192:A-R;195:A-R;216:C-T;219:A-Y;220:T-Y;222:A-R;223:A-R;225:T-Y;226:A-K;228:T-W;240:T-C;243:T-C;248:A-G;249:T-C;255:G-A;301:G-A;303:T-A;325:G-A;328:C-T;330:T-G;332:C-A;334:T-A;336:A-G;343:C-Y;344:A-Y;345:A-W;347:A-W;348:T-K;349:A-T;350:C-T;354:C-T;384:A-T;387:A-T;388:A-T;392:T-C;393:T-A;400:G-A;405:A-G;407:C-A;408:T-A;414:A-C;420:C-T;423:T-C;426:A-T;429:T-A;432:A-C;438:G-A"/>
+    </result>
+    <result type="gene" value="ileS_1">
+      <type type="mode" value="mutant"/>
+      <quality type="mutation" value="None"/>
+      <type type="detection" value="present"/>
+      <quality type="Coverage" value="100.0"/>
+      <quality type="Homology" value="95.32"/>
+      <quality type="Depth" value="91.23:20:161"/>
+      <quality type="coverage_distribution" value="['1-2754']"/>
+      <quality type="Mix" value="None"/>
+      <quality type="large_indels" value="None"/>
+      <quality type="mismatch" value="297:G-A;531:T-C;552:T-C;588:A-T;603:C-T;615:A-T;624:T-C;627:C-T;637:A-G;639:C-T;642:T-G;660:C-A;663:T-A;667:G-T;687:C-T;699:G-A;702:A-T;708:A-T;717:A-T;726:G-A;732:C-T;735:T-A;741:A-G;762:C-T;768:A-T;769:A-G;774:C-T;775:G-C;783:T-C;786:T-C;787:A-G;798:C-G;807:C-T;823:C-T;825:G-A;827:A-G;828:T-C;839:C-A;840:A-T;863:A-T;864:C-T;865:A-T;870:T-A;873:G-A;879:G-A;916:G-A;921:G-A;927:G-A;939:T-A;1011:T-A;1032:A-T;1035:A-T;1047:C-T;1062:A-C;1065:T-C;1077:C-T;1080:C-A;1092:A-T;1098:C-T;1110:T-A;1125:T-G;1137:A-T;1149:A-T;1150:C-T;1179:C-T;1188:C-T;1200:A-G;1206:A-G;1209:T-G;1212:A-T;1224:T-A;1230:A-T;1242:T-A;1248:C-T;1257:A-T;1261:C-A;1287:T-C;1326:C-T;1335:T-A;1362:T-A;1380:T-A;1398:T-C;1410:T-C;1416:A-T;1428:G-T;1464:A-T;1500:G-T;1506:C-T;1509:A-G;1510:C-T;1515:A-T;1533:A-T;1536:C-T;1548:T-C;1572:T-C;1578:C-T;1587:T-C;1593:T-A;1605:C-T;1608:T-C;1611:C-T;1614:G-A;1617:G-A;1629:G-T;1638:T-C;1644:A-G;1656:T-C;1689:C-T;1695:T-A;1698:T-A;1701:T-C;1708:T-G;1710:A-T;1719:A-G;1725:A-T;1728:A-T;1731:A-T;1752:T-A;1758:T-A;1764:T-A;1770:C-T;1773:T-A;2031:T-G;2313:A-G;2441:C-G;2598:T-A;2630:T-C;2718:C-T;2724:A-T"/>
+    </result>
+    <result type="gene" value="fusA_2">
+      <type type="mode" value="mutant"/>
+      <quality type="mutation" value="None"/>
+      <type type="detection" value="present"/>
+      <quality type="Coverage" value="100.0"/>
+      <quality type="Homology" value="99.42"/>
+      <quality type="Depth" value="129.54:61:183"/>
+      <quality type="coverage_distribution" value="['1-2082']"/>
+      <quality type="Mix" value="None"/>
+      <quality type="large_indels" value="None"/>
+      <quality type="mismatch" value="606:C-T;765:A-G;900:C-T;927:C-T;933:A-T;972:A-G;993:T-C;1032:T-A;1659:T-C;1674:T-A;1980:A-T;2025:T-C"/>
+    </result>
+    <result type="gene" value="grlA_1">
+      <type type="mode" value="mutant"/>
+      <quality type="mutation" value="None"/>
+      <type type="detection" value="present"/>
+      <quality type="Coverage" value="100.0"/>
+      <quality type="Homology" value="99.75"/>
+      <quality type="Depth" value="83.61:38:192"/>
+      <quality type="coverage_distribution" value="['1-2403']"/>
+      <quality type="Mix" value="108:C-T-0.33-0.67;126:A-T-0.72-0.28"/>
+      <quality type="large_indels" value="None"/>
+      <quality type="mismatch" value="108:T-Y;126:A-W;135:T-G;231:T-C;1699:C-G;1700:G-C"/>
+    </result>
+  </results>
+</ngs_sample>
+

@@ -18,11 +18,24 @@ for module_folder_path in module_folder_paths:
 	module_folder = os.path.realpath(os.path.abspath(os.path.join(os.path.split(inspect.getfile( inspect.currentframe() ))[0],module_folder_path)))
 	if module_folder not in sys.path:
 		sys.path.insert(1, module_folder)
-import utility_functions
+from utility_functions import *
 import log_writer
 
+"""
+Function
 
+
+The option of the method
+numberlist[list]: 
+tolerance[int]: 
+
+return
+covered_sections[list]: e.g. ['1-498']
+missing_sections[list]: 
+
+"""
 def extract_coverage_in_section(numberlist,tolerance):
+
     def as_range(iterable):
         l = list(iterable)
         if len(l) > 1:
@@ -39,14 +52,31 @@ def extract_coverage_in_section(numberlist,tolerance):
     missing_sections = []
     for n,k in enumerate([elem.split("-") for elem in covered_sections][:-1]):
         missing_sections.append(split_covered[n][1] + "-" + split_covered[n+1][0])
+  
     return covered_sections,missing_sections
+
+"""
+Function
+
+
+The option of the method
+mpileup_info_dictionary[dict]:
+the primary key is the allele numbers
+secondary key is type of quality metrics (e.g.sequence_raw,positions_infos,positions_indels_probabilities,position_deletions,position_insertions, position_mismatchs, positions_mix etc.
+value = value assigned to quality metrics		   
+
+return
+pileup_hash[dict]: primary key = allele names and
+secondary key= type of quality metrics (e.g. homology, sequence_distribution,predicted_seq,coverage_distribution,position_deletions,coverage,probability_big_indels,position_nuc_mismatchs,position_with_coverage,positions_mix
+value = value assigned to quality metrics
+"""
 
 #Main function
 def extract_quality_metrics(mpileup_info_dictionary):
+    
     pileup_hash = {}
     for allele in mpileup_info_dictionary:
-        print allele
-        print mpileup_info_dictionary[allele]
+        #print mpileup_info_dictionary[allele]
         positions_infos = mpileup_info_dictionary[allele]['positions_infos']
         positions_with_accepted_depth = mpileup_info_dictionary[allele]['positions_accepted_depth']
         position_mismatchs = mpileup_info_dictionary[allele]['position_mismatchs']
@@ -136,4 +166,5 @@ def extract_quality_metrics(mpileup_info_dictionary):
                 pass
         else:
             pass
+   
     return pileup_hash
