@@ -30,41 +30,35 @@ import extract_quality_metrics
 import log_writer
 from utility_functions import *
 
-
-
-
 """
-Function
-1.Index reference file 
-2.Generating SAM, BAMs and mpileup
-3.Parse a pileup file 
-4.extract_quality_metrics
-5.Find best_hit
-6.report result in xml file
+Function: run gene finder:
+- create tmp file in gene_finder results folder
+- index reference file 
+- generate SAM, BAMs and mpileup
+- Parse a pileup file 
+- extract_quality_metrics
+- find best_hits
+- report result in xml file
 
-The option of the method
-outdir[str]: path to output_directory
-fasta_file[str]: full path to reference fasta file
-fastq_files[list]: full path to the fastq file
-bowtie_options[list]: list bowtie_options, default:['-q', '--very-sensitive-local', '--no-unal', '-a']
-ids[str]: sample id (eg. NGSLIMSID_molis id)
-cut_off[str]: first number is the cut off to be used used to identify mix at each position when parsing the pileup file (e.g. ......,,,,,,A,T,,,,, if match >= 84 => no mix else mix)
+Input:
+- outdir[str]: path to output_directory
+- fasta_file[str]: full path to reference fasta file
+- fastq_files[list of two elements]: full path to the fastq_forward and fastq_reverse
+- bowtie_options[list]: list bowtie_options, default:['-q', '--very-sensitive-local', '--no-unal', '-a']
+- ids[str]: sample id (eg. NGSLIMSID_molis id)
+- cut_off[str]: first number is the cut off to be used used to identify mix at each position when parsing the pileup file (e.g. ......,,,,,,A,T,,,,, if match >= 84 => no mix else mix)
 	second number is the cut off to be used used to identify deletions at each position when parsing the pileup file (e.g. ......,,,*****,*,,,,, if nb of * >= 50 => deletion)
-minimum_coverage[str]: check if the min  depth of coverage is 5% of the maximum depth of coverage 
-log_directory[str]: full path to the log file
-workflow_name[str]: species_workflow (eg. staphylococcus_typing)
-version[str]: verion number (eg. 1-0-0)
+- minimum_coverage[integer]: default [5] coverage at any position should be over 5% of the maximum coverage depth for the gene to be considered acceptable otherwise gap.
+- log_directory[str]: full path to the logs folder
+- workflow_name[str]: species_workflow (eg. staphylococcus_typing)
+- version[str]: verion number (eg. 1-0-0)
 
 Returns
 Write result in xml file
 """
 
-def run_gene_finder(outdir,fasta_file,workflow_file, fastq_files,bowtie_options,ids,cut_off,minimum_coverage,log_directory, workflow_name="",version=""):
-
-    stderr_log_output = log_directory + "/" + 'gene_finder'+ ".stderr"
-    stdout_log_output = log_directory + "/" + 'gene_finder'+ ".stdout"
-    logger = log_writer.setup_logger(stdout_log_output, stderr_log_output)
-    
+def run_gene_finder(logger,outdir,fasta_file,workflow_file, fastq_files,bowtie_options,ids,cut_off,minimum_coverage,log_directory, workflow_name="",version=""):
+    stderr_log_output = log_directory + "/" + 'gene_finder'+ ".stderr"    
     forward_fastq = fastq_files[0]
     reverse_fastq = fastq_files[1]
     if not os.path.exists(outdir + '/tmp'):
@@ -80,28 +74,30 @@ def run_gene_finder(outdir,fasta_file,workflow_file, fastq_files,bowtie_options,
     pileup_dictionary = try_and_except(stderr_log_output, parsing_mpileup.read_mipelup,fasta_file,cut_off,minimum_coverage,outdir,workflow_name,version,ids,logger)
     pileup_quality_dictionary= try_and_except(stderr_log_output,extract_quality_metrics.extract_quality_metrics, pileup_dictionary)
     path_to_reference_folder = os.path.dirname(fasta_file)
-    xml_output,control_coverage_value= try_and_except(stderr_log_output,best_hit,workflow_file,pileup_quality_dictionary,path_to_reference_folder,outdir)
-    try_and_except(stderr_log_output,report_xml,outdir,workflow_name,version,ids,xml_output,control_coverage_value)
-    
-
-
+    xml_output,control_coverage_value,mix_indicator= try_and_except(stderr_log_output,best_hit,workflow_file,pileup_quality_dictionary,path_to_reference_folder,outdir)
+    try_and_except(stderr_log_output,report_xml,outdir,workflow_name,version,ids,xml_output,control_coverage_value,mix_indicator)
+    for root, dirs, files in os.walk(path_to_tmp_file):
+	print "dirs", dirs
+	for currentFile in files:
+		exts=('.sam', '.mod', '.bt2','fai')
+		if any(currentFile.lower().endswith(ext) for ext in exts):
+			os.remove(os.path.join(root, currentFile))
+	for di in dirs:
+		shutil.rmtree(os.path.join(root,di))
+		
+		
 
 """
 Function
-If the length of target and reference sequence are equal:
-1. translate the nuclotide sequence
-2. compare the protein sequence between the reference  and target sequence
-
-The option of the method   
-reference_seq[<class 'Bio.Seq.Seq'>]:reference nuclotide  sequence .
-target_fasta_sequence[<class 'Bio.Seq.Seq'> ]:target nuclotide  sequence
-
+from check_variant_transcription if compared nt sequence are equal: Translate nt Bio.seq sequence, perform clustalw alignment and report aa changes between two sequences
+Input:
+- reference_seq['Bio.Seq.Seq'>]: reference nuclotide sequence
+- target_fasta_sequence['Bio.Seq.Seq'> ]: target nuclotide sequence
 Returns
-mutations[dict]: Position and change of  mutated amino acid sequence. Also return region (whether the change is in non stop or early stop codon region)
+final_report[dict]: key[integer]= position value[str]= amino acid changes
 e.g.  {145: 'no_stop', 37: 'I-X'}
 """
 def compare_protein_sequence(reference_seq,target_seq):
-	
     mutations = {}
     ref_prot = list(reference_seq.translate())
     target_prot = list(target_seq.translate())
@@ -122,17 +118,12 @@ def compare_protein_sequence(reference_seq,target_seq):
 
 """
 Function
-If the length of target and reference sequence are not equal:
-1. translate the nuclotide sequence
-2. Compare the protein sequence between the reference  and target sequence using Clustalw. 
-
-The option of the method   
-reference_seq[<class 'Bio.Seq.Seq'>]:  reference nuclotide  sequence .
-target_fasta_sequence[<class 'Bio.Seq.Seq'> ]:  target nuclotide  sequence
-outdir[str]: full path to the output dir  
-
+from check_variant_transcription if compared nt sequence not equal: Translate nt Bio.seq sequence, perform clustalw alignment and report aa changes between two sequences
+Input:
+- reference_seq['Bio.Seq.Seq'>]: reference nuclotide sequence
+- target_fasta_sequence['Bio.Seq.Seq'> ]: target nuclotide sequence
 Returns
-final_report[dict]: Position and change of  mutated amino acid sequence. Also return region (whether the change is in non stop or early stop codon region)
+final_report[dict]: key[integer]= position value[str]= amino acid changes
 e.g.  {145: 'no_stop', 37: 'I-X'}
 """
    
@@ -178,18 +169,16 @@ def clustalw_align(reference_seq,target_seq,output):
 
 """
 Function
-Compare the protien sequence between the reference  and target sequence. 
-
-The option of the method   
-reference_seq[<class 'Bio.Seq.Seq'>]: reference nuclotide  sequence .
-target_fasta_sequence[<class 'Bio.Seq.Seq'> ]: target nuclotide  sequence
-outdir[str]: full path to the output dir  
+from best_hit function: take nt sequence of reference and target seq, translate into proteins and compare aa sequence by checking elements in sequence lists or by clustalw alignment if different length 
+Input:  
+- reference_seq['Bio.Seq.Seq'>]: reference nuclotide sequence
+- target_fasta_sequence['Bio.Seq.Seq'> ]: target nuclotide sequence
+- outdir[str]: full path to the output dir  
 
 Returns
-mutations[dict]Position and change of  mutated amino acid sequence. Also return region (whether the change is in non stop or early stop codon region)
+mutations[dict]Position and change of mutated amino acid sequence including non stop or early stop
 e.g.  {145: 'no_stop', 37: 'I-X'}
 """
-   
 def check_variant_transcription(reference_seq,target_fasta_sequence,outdir):
   
     if len(target_fasta_sequence) == 1:
@@ -205,30 +194,52 @@ def check_variant_transcription(reference_seq,target_fasta_sequence,outdir):
 
 """
 Function
+Take position of mutations of interest from workflow.txt file and return a list of position
+Input[str] = eg. 5,7,10-15,20
+return[list] = eg. [5,7,10,11,12,13,14,15,20]
+"""
+def pos_of_int_to_list(pos_of_int):
+    if pos_of_int != 'N':
+        total_list = []
+        pos_int_list = pos_of_int.replace(" ","").strip("\n").split(",")
+        for pos_dt in pos_int_list:
+            region = pos_dt.split("-")
+            if len(region) == 2 and int(region[0]) < int(region[1]):
+                total_list.extend(range(int(region[0]),int(region[1])))
+            elif len(region) == 1:
+                total_list.append(int(pos_dt))
+            else:
+                print "format for mutations in workflow file is not correct eg. 5-20,46,75-90"
+                sys.exit(1)
+        return total_list
+    else:
+        return None
 
-The option of the method   
-pileup_hash[dict]: primary  key = allele names, secondary key= type of quality metrics  (e.g.:housekeeping_detection,ref_cut_off, coverage_distribution,position_deletions,protein_alterations,coverage etc}   andvalue = value assigned to the secondary key
-path_to_reference_folder[str]: full path to the refrence folder 
-outdir[str]: full path to the output dir 
-
+"""
+Function
+Take pileup_hash [dict] generated in extract_quality_metrics function and report only best hits if multiple reference sequences exist from a gene
+update the dictionary with info from workflow.txt eg. desrciption, report_type
+calculate control-coverage and mix_indicator values from chromosoml targets
+Input:
+- pileup_hash [dict] : generated in extract_quality_metrics function
+- path_to_reference_folder[str]: full path to the refrence folder 
+- outdir[str]: full path to the output dir 
+- workflow_file[str]: full path tp workflow.txt
 Returns
-xml_output[dict]:
-primary  key = allele names, secondary key= type of quality metrics   (e.g.:housekeeping_detection,ref_cut_off, coverage_distribution,position_deletions,protein_alterations,coverage etc}   and
-value = value assigned to the secondary key
-	  
-control_coverage_value[str]:
-
+-xml_output[dict]: pileup_hash dictionary updated with best_hits info for variants
+-control_coverage_value[float]: average depth from all chromosomal reference genes or 'failed' in chromosomal genes are not detected
+-mix_indicator[str] = nb of mix positions in chromosomal reference genes eg. (5:5052) (5 mix positions: total nb of chromosomal positions) or 'failed' in chromosomal genes are not detected
 """ 
 def best_hit(workflow_file,pileup_hash,path_to_reference_folder,outdir):
-	
+    total_mix ={}
     control_coverage = []
     list_of_keys = pileup_hash.keys()
     xml_output = {}
     with open(workflow_file) as workflow_info:
-    #with open(path_to_reference_folder + '/workflow.txt') as workflow_info:
         for line in workflow_info:
             final_output = []
-            gene,ref_homology,workflow,start_pos,end_pos = line.split()
+            gene,ref_homology,workflow,pos_of_int,description,reporting_type,reporting_order = line.strip("\n").split("\t")            
+            report_type = reporting_type + "_" + reporting_order
             if any(key.split('_')[0] == gene for key in pileup_hash):
                 best_hits = []
                 gene_by_group = [elem for elem in list_of_keys if elem.split('_')[0] == gene]
@@ -239,7 +250,7 @@ def best_hit(workflow_file,pileup_hash,path_to_reference_folder,outdir):
                 for variant in gene_by_group:
                     key_coverage = pileup_hash[variant]['coverage']
                     key_mismatch = len(pileup_hash[variant]['position_nuc_mismatchs'])
-                    key_insertion = len(pileup_hash[variant]['position_insertions'])
+                    key_insertion = len(pileup_hash[variant]['position_insertions'])                   
                     if results_by_insertion.has_key(key_insertion):
                         results_by_insertion[key_insertion].append(variant)
                     else:
@@ -279,9 +290,18 @@ def best_hit(workflow_file,pileup_hash,path_to_reference_folder,outdir):
                     hash_reference_seq[ref.id] = ref.seq                   
                 if workflow == 'mutant':
                     control_coverage.append(float(pileup_hash[best_hits[0]]['depth'].split(':')[0]))
+                    if total_mix.has_key('total_chromosomal_length'):
+                        total_mix['total_chromosomal_length'].append(int(pileup_hash[best_hits[0]]['allele_length']))
+                    else:
+                        total_mix['total_chromosomal_length'] = [int(pileup_hash[best_hits[0]]['allele_length'])]
+                    if total_mix.has_key('total_mix_positions'):
+                        total_mix['total_mix_positions'].append(int(len(pileup_hash[best_hits[0]]['positions_mix'].keys())))
+                    else:
+                        total_mix['total_mix_positions'] = [int(len(pileup_hash[best_hits[0]]['positions_mix'].keys()))]
+                    
                     mutation_info = {}
                     reference_seq = hash_reference_seq[best_hits[0]]
-                    if pileup_hash[best_hits[0]]['coverage'] == 100.0:
+                    if pileup_hash[best_hits[0]]['coverage'] == float(100):
                         if len(target_fasta_sequence) == 1:
                             if len(target_fasta_sequence[0].seq) == len(reference_seq):
                                 mutations = compare_protein_sequence(reference_seq,target_fasta_sequence[0].seq)
@@ -296,88 +316,128 @@ def best_hit(workflow_file,pileup_hash,path_to_reference_folder,outdir):
                         mutation_info['positions_prot_modifications'] = "ND"
                         
                     if mutation_info['positions_prot_modifications'] != "ND":
-                        if len(mutation_info['positions_prot_modifications']) != 0:
-                            relevent_position = dict([(key,mutation_info['positions_prot_modifications'][key]) for key in mutation_info['positions_prot_modifications'] if int(key) >= int(start_pos) and int(key) <= int(end_pos)])
-                            pileup_hash[best_hits[0]]['relevent_position'] = relevent_position
+                        if len(mutation_info['positions_prot_modifications']) != 0:                            
+                            position_of_interest = pos_of_int_to_list(pos_of_int)
+                            if position_of_interest != None:
+                                relevent_position = dict([(key,mutation_info['positions_prot_modifications'][key]) for key in mutation_info['positions_prot_modifications'] if int(key) in position_of_interest])
+                                pileup_hash[best_hits[0]]['relevent_position'] = relevent_position
+                            else:
+                                pileup_hash[best_hits[0]]['relevent_position'] = "ND"
                         else:
                             pileup_hash[best_hits[0]]['relevent_position'] = {}
                     else:
                         pileup_hash[best_hits[0]]['relevent_position'] = "ND"
                         
                     pileup_hash[best_hits[0]]['ref_cut_off'] = int(ref_homology)
+                    pileup_hash[best_hits[0]]['report_type'] = str(report_type)
+                    pileup_hash[best_hits[0]]['description'] = str(description)
                     xml_output[best_hits[0]] = pileup_hash[best_hits[0]]
                 elif workflow == 'variant':
                     reference_seq = hash_reference_seq[best_hits[0]]
-                    if pileup_hash[best_hits[0]]['coverage'] == 100: #and best_hits[0].split("_")[0] != "23s":
+                    if pileup_hash[best_hits[0]]['coverage'] == float(100): #and best_hits[0].split("_")[0] != "23s":
                         alterations = check_variant_transcription(reference_seq,target_fasta_sequence,outdir)
                         pileup_hash[best_hits[0]]['protein_alterations'] = alterations
                     else:
                         pileup_hash[best_hits[0]]['protein_alterations'] = 'ND'
                     pileup_hash[best_hits[0]]['ref_cut_off'] = int(ref_homology)
+                    pileup_hash[best_hits[0]]['report_type'] = str(report_type)
+                    pileup_hash[best_hits[0]]['description'] = str(description)
                     xml_output[best_hits[0]] = pileup_hash[best_hits[0]]
+                    
+                    
                 elif workflow == 'regulator':
                     pileup_hash[best_hits[0]]['nucleotide_alterations'] = {}
                     total_position_mismatch = pileup_hash[best_hits[0]]['position_nuc_mismatchs']
-                    continous_coverage = []
-                    for section_covered in pileup_hash[best_hits[0]]['coverage_distribution']:
-                        coverage_details = section_covered.split('-')
-                        if int(start_pos) >= int(coverage_details[0]) and int(end_pos) <= int(coverage_details[1]):
-                            continous_coverage.append("true")
-                    if len(continous_coverage) == 1:
-                        if len(total_position_mismatch) != 0:
-                            for sp_position in total_position_mismatch:
-                                if int(sp_position) >= int(start_pos) and int(sp_position) <= int(end_pos):
-                                    pileup_hash[best_hits[0]]['nucleotide_alterations'][sp_position] = total_position_mismatch[sp_position]
+                    total_coverage_info = pileup_hash[best_hits[0]]['position_with_coverage']                    
+                    position_of_interest = pos_of_int_to_list(pos_of_int)
+                    if position_of_interest != None:
+                        if position_of_interest != 0:
+                            for pos_reg in position_of_interest:
+                                if total_coverage_info.has_key(pos_reg):
+                                    if total_position_mismatch.has_key(pos_reg):
+                                        pileup_hash[best_hits[0]]['nucleotide_alterations'][pos_reg] = total_position_mismatch[pos_reg]
+                                else:
+                                    pileup_hash[best_hits[0]]['nucleotide_alterations'][pos_reg] = 'ND'
                     else:
                         pileup_hash[best_hits[0]]['nucleotide_alterations'] = 'ND'
                     pileup_hash[best_hits[0]]['ref_cut_off'] = int(ref_homology)
+                    pileup_hash[best_hits[0]]['report_type'] = str(report_type)
+                    pileup_hash[best_hits[0]]['description'] = str(description)
                     xml_output[best_hits[0]] = pileup_hash[best_hits[0]]
             else:
                 if workflow == 'mutant':
                     xml_output[gene] = {}
                     xml_output[gene]['housekeeping_detection'] = 'ND'
+                    report_type = reporting_type + "_" + reporting_order
+                    xml_output[gene]['report_type'] = str(report_type)
+                    xml_output[gene]['description'] = str(description)              
+                elif reporting_type == 'required' and workflow != 'mutant':
+                    xml_output[gene] = {}
+                    xml_output[gene]['absolute_reporting'] = 'ND'
+                    report_type = reporting_type + "_" + reporting_order
+                    xml_output[gene]['report_type'] = str(report_type)
+                    xml_output[gene]['description'] = str(description)
                 else:
-                    pass           
+                    pass
+            
     if len(control_coverage) > 0:       
         control_coverage_value = sorted(control_coverage)[0]
     else:
         control_coverage_value = 'failed'
-    
-    return xml_output,control_coverage_value
+    if len(total_mix) > 0:
+        mix_indicator = str(sum(total_mix['total_mix_positions'])) + ":" + str(sum(total_mix['total_chromosomal_length']))
+    else:
+        mix_indicator = 'failed'    
+    for key in xml_output.keys():
+        for sub_key in xml_output[key].keys():
+            if sub_key == 'position_insertions' or sub_key == 'position_deletions':
+                print sub_key
+                print xml_output[key][sub_key]
+            
+    return xml_output,control_coverage_value,mix_indicator
 
 
 """
 Function
-Report result in xml file 
+generate xml file from dictionary/info generated by best_hit function
+Input:  
+-outdir[str]: full path to the output dir
+-workflow_name[str]: species_workflow (eg. staphylococcus_typing
+-version[str]: version number
+-prefix[str]: sampleid (e.g. NGSLIMS_molis number, 9188_H14276008707)
+-xml_output[dict]:primary key=gene_id, value= dictionary with keys= type of metric and value= value metric
+-control_coverage_value[float]: from best_hit function
 
-The option of the method   
-outdir[str]: full path to the output dir
-workflow_name[str]: species_workflow (eg. staphylococcus_typing
-version[str]: version number
-prefix[str]: sampleid (e.g. NGSLIMS_molis number, 9188_H14276008707)
-xml_output[dict]:primary key=allele name, secondary key = type of quality metrics and value= value of quality metrics
-control_coverage_value[str]:
-
-Returns
-print result in xml file
+- Returns
+ generate and print xml file in output folder
 
 """ 
-def report_xml(outdir,workflow_name,version,prefix,xml_output,control_coverage_value):
+def report_xml(outdir,workflow_name,version,prefix,xml_output,control_coverage_value,mix_indicator):
 
     genome_id = prefix.split(".")[0]   
     xml_log_file = open(outdir + "/" + genome_id + ".results.xml", "w")
     root = etree.Element("ngs_sample", id = genome_id)
     workflow = etree.SubElement(root, "workflow", value=workflow_name, version = version)
-    coverage_control = etree.SubElement(root, "coverage_control", value=str(control_coverage_value))
     results = etree.SubElement(root, 'results')
-    
+    #gene_profiling = etree.SubElement(results, 'gene_profiling')
+    coverage_control = etree.SubElement(results, "coverage_control", value=str(control_coverage_value))
+    mix_indicator = etree.SubElement(results, "mix_indicator", value=mix_indicator)   
     for gene_cluster, value in xml_output.items():
         #gene = gene_cluster.split('_')[0]
-	gene = gene_cluster
+        gene = gene_cluster
+        # print xml_output['position_deletions']
+        # print xml_output['position_insertions']
         result = etree.SubElement(results, "result", type="gene", value = gene)
         if value.has_key('housekeeping_detection'):
             etree.SubElement(result, "result_data", type="mode", value = 'mutant')
-            etree.SubElement(result, "result_data", type="detection", value = 'not_detected')
+            etree.SubElement(result, "result_data", type="detection", value = 'ND') #change here to replace output to not_detected
+            etree.SubElement(result, "result_data", type="description", value = str(value['description']))
+            etree.SubElement(result, "result_data", type="report_type", value = str(value['report_type']))
+        elif value.has_key('absolute_reporting'):
+            etree.SubElement(result, "result_data", type="mode", value = 'variant')
+            etree.SubElement(result, "result_data", type="detection", value = 'ND') #change here to replace output to not_detected
+            etree.SubElement(result, "result_data", type="description", value = str(value['description']))
+            etree.SubElement(result, "result_data", type="report_type", value = str(value['report_type']))        
         else:        
             if value.has_key('relevent_position'):
                 etree.SubElement(result, "result_data", type="mode", value = 'mutant')
@@ -395,7 +455,6 @@ def report_xml(outdir,workflow_name,version,prefix,xml_output,control_coverage_v
                     etree.SubElement(result, "result_data", type="mutation", value = 'ND')
             elif value.has_key('nucleotide_alterations'):
                 etree.SubElement(result, "result_data", type="mode", value = 'regulator')
-                #print value['nucleotide_alterations']
                 if value['nucleotide_alterations'] != "ND":
                     if len(value['nucleotide_alterations']) != 0:
                         report = []
@@ -424,11 +483,18 @@ def report_xml(outdir,workflow_name,version,prefix,xml_output,control_coverage_v
                     etree.SubElement(result, "result_data", type="alterations", value = 'ND')
             
             if value['homology'] >= float(value['ref_cut_off']) and value['coverage'] == float(100):
-                etree.SubElement(result, "result_data", type="detection", value = 'present')
-            elif value['homology'] >= float((value['ref_cut_off'])) and value['coverage'] != float(100) or value['homology'] < float((value['ref_cut_off'])) and value['coverage'] == float(100):
-                etree.SubElement(result, "result_data", type="detection", value = 'uncertain')
+                etree.SubElement(result, "result_data", type="detection", value = 'D')# change here to replace output for detection
+                gene_predicted_seq = []
+                for contig_predicted in value['predicted_seq']:
+                    gene_predicted_seq.append(str(contig_predicted.id))
+                    gene_predicted_seq.append(str(contig_predicted.seq))
+                fasta_contigs_file = open(outdir + '/' + gene + '_contigs.fasta',"w")
+                fasta_contigs_file.write('\n'.join(gene_predicted_seq))
+                fasta_contigs_file.close
+                                
+            elif value['homology'] >= float((value['ref_cut_off'])) and value['coverage'] != float(100):# can relaxe the condition of uncertain here
+                etree.SubElement(result, "result_data", type="detection", value = 'U') # change here to moditify output for uncertain
                 all_contigs = []
-                #print value['predicted_seq']
                 for contig_predicted in value['predicted_seq']:
                     all_contigs.append(str(contig_predicted.id))
                     all_contigs.append(str(contig_predicted.seq))
@@ -436,12 +502,37 @@ def report_xml(outdir,workflow_name,version,prefix,xml_output,control_coverage_v
                 fasta_contigs_file.write('\n'.join(all_contigs))
                 fasta_contigs_file.close 
             else:
-                etree.SubElement(result, "result_data", type="detection", value = 'absent')
-            
-            etree.SubElement(result, "result_data", type="Coverage", value = str(value['coverage']))
-            etree.SubElement(result, "result_data", type="Homology", value = str(value['homology']))
-            etree.SubElement(result, "result_data", type="Depth", value = str(value['depth']))
+                etree.SubElement(result, "result_data", type="detection", value = 'ND')# change here to modidy output for absent
+            etree.SubElement(result, "result_data", type="description", value = str(value['description']))
+            etree.SubElement(result, "result_data", type="report_type", value = str(value['report_type']))
+            etree.SubElement(result, "result_data", type="coverage", value = str(value['coverage']))
+            etree.SubElement(result, "result_data", type="homology", value = str(value['homology']))
+            etree.SubElement(result, "result_data", type="depth", value = str(value['depth']))
             etree.SubElement(result, "result_data", type="coverage_distribution", value = str(value['coverage_distribution']))
+            #XXXXXXX
+            if value.has_key('position_insertions'):
+                insertion_pos =[]
+                if len(value['position_insertions']):
+                    for position,mutation in sorted(value['position_insertions'].items()):
+                        relevent_info =  str(position) + ':' + mutation
+                        insertion_pos.append(relevent_info)
+                insertion_pos_report = ';'.join(insertion_pos)
+                if len(insertion_pos_report) > 0:
+                    etree.SubElement(result, "result_data", type="insertions", value = insertion_pos_report)
+                else:
+                    etree.SubElement(result, "result_data", type="insertions", value = "None")
+            if value.has_key('position_deletions'):
+                deletion_pos =[]
+                if len(value['position_deletions']):
+                    for position,mutation in sorted(value['position_deletions'].items()):
+                        relevent_info =  str(position) + ':' + mutation
+                        deletion_pos.append(relevent_info)
+                deletion_pos_report = ';'.join(deletion_pos)
+                if len(deletion_pos_report):
+                    etree.SubElement(result, "result_data", type="deletions", value = deletion_pos_report)
+                else:
+                    etree.SubElement(result, "result_data", type="deletions", value = "None")
+            #XXXXXXX
             if len(value['positions_mix']) > 0:
                 report = []
                 for position,mutation in sorted(value['positions_mix'].items()):
@@ -450,9 +541,9 @@ def report_xml(outdir,workflow_name,version,prefix,xml_output,control_coverage_v
                     mismatch_info = str(position) + ':' + '-'.join(mutation.keys()) + '-' + '-'.join(new)
                     report.append(mismatch_info)
                 mix = ';'.join(report)
-                etree.SubElement(result, "result_data", type="Mix", value = mix)
+                etree.SubElement(result, "result_data", type="mix", value = mix)
             else:
-                etree.SubElement(result, "result_data", type="Mix", value = 'None')
+                etree.SubElement(result, "result_data", type="mix", value = 'None')
             
             if len(value['probability_big_indels']) > 0:
                 etree.SubElement(result, "result_data", type="large_indels", value = str(sorted(value['probability_big_indels'].items())))
@@ -468,10 +559,6 @@ def report_xml(outdir,workflow_name,version,prefix,xml_output,control_coverage_v
                 etree.SubElement(result, "result_data", type="mismatch", value = mix)
             else:
                 etree.SubElement(result, "result_data", type="mismatch", value = 'None')
-            #etree.SubElement(result, "result_data", type="sequence", value = str(value['predicted_seq']))
     print etree.tostring(root, pretty_print=True)
     print >> xml_log_file, etree.tostring(root, pretty_print=True)
-   
-
-
     
