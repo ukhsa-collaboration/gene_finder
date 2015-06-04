@@ -104,7 +104,13 @@ def main():
         else:
             check_file_exists(opts.input_directory, 'input directory')
             fastq_files = glob.glob(opts.input_directory + "/" + glob_pattern)
-        opts.gene_file_directory = os.path.dirname(os.path.realpath(__file__)) + "/gene_reference_data/" + opts.workflow
+        #opts.gene_file_directory = os.path.dirname(os.path.realpath(__file__)) + "/gene_reference_data/" + opts.workflow
+
+        # GENE_FINDER_REFERENCE_DIR is assigned by module /phe/phe_ref/<workflow_name>/gene_finder_reference/module_version
+        # loading this phe_ref module by the phe/gene_finder module requires the prior command-line assignment of the 
+        # workflow_name (i.e. workflow.split(.)[0]) to the environment variable WORKFLOW_NAME as below
+        # export WORKFLOW_NAME=workflow_name
+        opts.gene_file_directory = os.environ['GENE_FINDER_REFERENCE_DIR'] # see preceeding lines if KeyError: 'GENE_FINDER_REFERENCE_DIR'
 
         if len(fastq_files) < 2:
             print "Fastq files are not pairs!"
@@ -181,6 +187,9 @@ def main():
 
     fasta_file = opts.gene_file_directory + '/reference.fasta'
     workflow_file= opts.gene_file_directory + '/workflow.txt'
+    for file in [ fasta_file, workflow_file ]:
+       check_file_exists(file, os.path.basename(file) )
+ 
         
     outdir = opts.output_directory
     cut_off = opts.cut_off
