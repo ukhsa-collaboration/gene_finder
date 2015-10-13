@@ -81,7 +81,7 @@ parser.add_argument('-output_directory', '-o',type=str,help='Output root directo
 #parser.add_argument('-gene_file_directory', '-gf',help='Directory containing the reference genbank and fasta files')
 parser.add_argument('-gene_file_directory',
                     '-gf',
-                    default=os.environ.get('GENE_FINDER_REFERENCE_DIR')
+                    default=os.environ.get('GENE_FINDER_REFERENCE_DIR'),
                     help='Directory containing the reference genbank and fasta files')
 parser.add_argument('-bowtie_options','-bopt',help='path_to_clustalw',default=['-q','--very-sensitive-local','--no-unal','-a'])
 parser.add_argument('-cut_off', '-c',type=str, help='cut_off values Sub:Ind',default='84:50')
