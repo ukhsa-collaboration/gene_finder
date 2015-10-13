@@ -78,7 +78,11 @@ parser.add_argument('-workflow', '-w', help='If using a workflow you must specif
 parser.add_argument('-fastq_1', '-1', help='Fastq file pair 1')
 parser.add_argument('-fastq_2', '-2', help='Fastq file pair 2')
 parser.add_argument('-output_directory', '-o',type=str,help='Output root directory')
-parser.add_argument('-gene_file_directory', '-gf',help='Directory containing the reference genbank and fasta files')
+#parser.add_argument('-gene_file_directory', '-gf',help='Directory containing the reference genbank and fasta files')
+parser.add_argument('-gene_file_directory',
+                    '-gf',
+                    default=os.environ.get('GENE_FINDER_REFERENCE_DIR')
+                    help='Directory containing the reference genbank and fasta files')
 parser.add_argument('-bowtie_options','-bopt',help='path_to_clustalw',default=['-q','--very-sensitive-local','--no-unal','-a'])
 parser.add_argument('-cut_off', '-c',type=str, help='cut_off values Sub:Ind',default='84:50')
 parser.add_argument('-min_cov', '-m',type=str, help='min nb of reads for coverage confidence',default='5')
@@ -110,7 +114,10 @@ def main():
         # loading this phe_ref module by the phe/gene_finder module requires the prior command-line assignment of the 
         # workflow_name (i.e. workflow.split(.)[0]) to the environment variable WORKFLOW_NAME as below
         # export WORKFLOW_NAME=workflow_name
-        opts.gene_file_directory = os.environ['GENE_FINDER_REFERENCE_DIR'] # see preceeding lines if KeyError: 'GENE_FINDER_REFERENCE_DIR'
+
+        ## 2015OCT13 now set as default within parser
+        ## opts item will be None if os.environ is not set
+        ## opts.gene_file_directory = os.environ['GENE_FINDER_REFERENCE_DIR'] # see preceeding lines if KeyError: 'GENE_FINDER_REFERENCE_DIR'
 
         if len(fastq_files) < 2:
             print "Fastq files are not pairs!"
