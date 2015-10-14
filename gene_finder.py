@@ -19,7 +19,7 @@ def help_function():
 	       - clustalw/2.1
 	       - biopython/python2.7/1.61
 	       - phe/common_modules/1-0
-	       - bowtie2/2.1.0
+	       - bowtie2/2.1.0patch
 	       - numpy/python2.7/1.7.1
 	       - pysam/python2.7/0.7.5
 	       - phe/gene_finder/1-0
@@ -27,14 +27,29 @@ def help_function():
 	       - lxml/python2.7/3.2.3
 	       - yaml/1.1
 	       
-    usage[1] need at least two arguments
-        1) input_directory (-i) containing a pair of processed fastq files (format *.processed.*.fastq).
-	    2) workflow (-w) e.g 'staphylococcus-aureus-typing-1.0' is folder [reference.fasta(multifasta), workflow.txt(tab_delimited)
-	         the config file for the work flow is hard coded but can be overridden using the -c argument
-	    3) output_directory (-o) is optional, default an output file is created in the input directory
+
+    usage[1] has two required arguments
+      1) input_directory (-i) containing a pair of processed fastq files (format *.processed.*.fastq).
+      2) workflow (-w) e.g 'staphylococcus-aureus-typing.ngsservice'
+    usage[1] optional arguments include
+      3) full path to reference dir containing the reference genbank and fasta files as reference.fasta(multifasta), 
+        workflow.txt(tab_delimited). This is set by default to the latest reference dir for the active workflow when 
+        module phe/gene_finder/<major-minor>prereq is loaded; otherwise a path needs to be passed to the 
+        -gf|--gene_file_directory param.
+	    4) output_directory (-o) is optional; the default creates an output dir within the input directory
+
 	
-	usage[2]
-	    1) input_directory should contain only two paired fastq files (format *.fastq or *.fastq.gz)
+	usage[2] has two required arguments
+	  1) input_directory should contain only two paired fastq files (format *.fastq or *.fastq.gz)
+      2) full path to reference dir containing the reference genbank and fasta files as reference.fasta(multifasta), 
+        workflow.txt(tab_delimited) needs to be passed to the -gf|--gene_file_directory param.
+
+
+	usage[3] has three required arguments
+	  1) full path to fastq_1, preferably processed, passed to -1|-fastq_1 param
+	  2) full path to fastq_2, preferably processed, passed to -2|-fastq_2 param
+      3) full path to reference dir containing the reference genbank and fasta files as reference.fasta(multifasta), 
+        workflow.txt(tab_delimited) needs to be passed to the -gf|--gene_file_directory param.
 	
 	Reference directory should contain two files:
 	 - multifasta file named "reference.fasta" containing nucleotide sequences with gene name in header: eg. gyrA or sea_1, sea_2 for report best match
@@ -69,7 +84,7 @@ def check_file_exists(filepath, file_description):
             print(file_description + " (" + filepath + ") does not exist")
             sys.exit(1)
         else:
-            print file_description + " detected"
+            print file_description + " detected;" + filepath
 		
 
 parser = argparse.ArgumentParser()
@@ -79,10 +94,10 @@ parser.add_argument('-fastq_1', '-1', help='Fastq file pair 1')
 parser.add_argument('-fastq_2', '-2', help='Fastq file pair 2')
 parser.add_argument('-output_directory', '-o',type=str,help='Output root directory')
 #parser.add_argument('-gene_file_directory', '-gf',help='Directory containing the reference genbank and fasta files')
-parser.add_argument('-gene_file_directory',
+parser.add_argument('--gene_file_directory',
                     '-gf',
                     default=os.environ.get('GENE_FINDER_REFERENCE_DIR'),
-                    help='Directory containing the reference genbank and fasta files')
+                    help='Path to dir containing a multientry reference.fasta file and a workflow.txt file.')
 parser.add_argument('-bowtie_options','-bopt',help='path_to_clustalw',default=['-q','--very-sensitive-local','--no-unal','-a'])
 parser.add_argument('-cut_off', '-c',type=str, help='cut_off values Sub:Ind',default='84:50')
 parser.add_argument('-min_cov', '-m',type=str, help='min nb of reads for coverage confidence',default='5')
@@ -95,7 +110,7 @@ def main():
         parser.print_help()
         sys.exit()
     else:
-	fastq_files = []	
+	fastq_files = []
 	glob_pattern = "*.processed*.fastq*"
 	ids = None
 	workflow_name = None
@@ -108,16 +123,20 @@ def main():
         else:
             check_file_exists(opts.input_directory, 'input directory')
             fastq_files = glob.glob(opts.input_directory + "/" + glob_pattern)
-        #opts.gene_file_directory = os.path.dirname(os.path.realpath(__file__)) + "/gene_reference_data/" + opts.workflow
 
-        # GENE_FINDER_REFERENCE_DIR is assigned by module /phe/phe_ref/<workflow_name>/gene_finder_reference/module_version
-        # loading this phe_ref module by the phe/gene_finder module requires the prior command-line assignment of the 
+        #superceeded for LMFILES/newCAS2# opts.gene_file_directory = os.path.dirname(os.path.realpath(__file__)) + "/gene_reference_data/" + opts.workflow
+
+        # GENE_FINDER_REFERENCE_DIR is an environment variable assigned by module /phe/phe_ref/<workflow_name>/gene_finder_reference/<module_version>
+        # This phe_ref module is loaded by the phe/gene_finder/<Major>-<Minor>prereq module; the pre-requisiite for this load is the assignment of the 
         # workflow_name (i.e. workflow.split(.)[0]) to the environment variable WORKFLOW_NAME as below
         # export WORKFLOW_NAME=workflow_name
 
-        ## 2015OCT13 now set as default within parser
-        ## opts item will be None if os.environ is not set
-        ## opts.gene_file_directory = os.environ['GENE_FINDER_REFERENCE_DIR'] # see preceeding lines if KeyError: 'GENE_FINDER_REFERENCE_DIR'
+        ## 2015OCT13 now set as default within parser when module phe/gene_finder/<Major>-<Minor>prereq is loaded
+        ## module phe/gene_finder/<Major>-<Minor> does not assign the GENE_FINDER_REFERENCE_DIR env variable, leaving
+        ## opt.gene_file_directory ==  None. That condition needs amended before proceeding
+        if not opts.gene_file_directory:
+            print("If you are using the 'workflow' entry point but have not loaded gene_finder using the 'prereq' module, you need also to pass to the -gf|--gene_file_directory param a path to a reference_dir containing files reference.fasta and workflow.txt")
+            sys.exit(1)
 
         if len(fastq_files) < 2:
             print "Fastq files are not pairs!"
@@ -138,11 +157,12 @@ def main():
 
 
     # second option: need to provide forward and reverse fastq_files using -1 and -2 options
+    # and path to reference dir contining reference.fasta and workflow.txt files
     elif opts.fastq_1 or opts.fastq_2:
         check_file_exists(opts.fastq_1, 'Fastq 1')
         check_file_exists(opts.fastq_2, 'Fastq 2')
         if not opts.gene_file_directory:
-            print("If you are using -1 and -2 options, you must provide the reference fasta file and GF workflow directory folder")
+            print("If you are passing full processed fastq paths to the fastq-1 and fastq-2 params, you need also to pass to the -gf|--gene_file_directory param a path to a reference_dir containing files reference.fasta and workflow.txt")
             sys.exit(1)
         else:
             check_file_exists(opts.gene_file_directory, 'gene_file_directory')
@@ -170,11 +190,18 @@ def main():
     elif opts.input_directory:
         check_file_exists(opts.input_directory, 'input_directory')
         if not opts.gene_file_directory:
-            print("If you are providing the input directory for the fastqs, the reference fasta file and gene reference folder which should contain reference.fasta and workflow.txt files")
+            print("If you are passing a directory containing processed fastqs as arg to the -i|--input_directory param, you need also to pass to the -gf|--gene_file_directory param a path to a reference_dir containing files reference.fasta and workflow.txt")
             sys.exit(1)
         else:
             check_file_exists(opts.gene_file_directory, 'gene_file_directory')
-        fastq_files = glob.glob(opts.input_directory + "/*fastq*")
+
+        # glob preferentially for processed fastq files
+        fastq_files = glob.glob('%s/%s' % (opts.input_directory,
+                                           glob_pattern))
+        # if no processed fastq then use whatever's available
+        if not fastq_files:
+            fastq_files = glob.glob('%s/%s' % (opts.input_directory,
+                                               "*fastq*"))
         if not opts.output_directory:
             opts.output_directory = opts.input_directory + '/gene_finder'
             if not os.path.isdir(opts.output_directory): os.makedirs(opts.output_directory) #make output_directory
@@ -190,14 +217,14 @@ def main():
         if not opts.log_directory:
             opts.log_directory = opts.output_directory + '/logs'
         if not os.path.isdir(opts.log_directory): os.makedirs(opts.log_directory) #make log_directory
-	    
+
 
     fasta_file = opts.gene_file_directory + '/reference.fasta'
     workflow_file= opts.gene_file_directory + '/workflow.txt'
     for file in [ fasta_file, workflow_file ]:
        check_file_exists(file, os.path.basename(file) )
- 
-        
+
+
     outdir = opts.output_directory
     cut_off = opts.cut_off
     bowtie_options = opts.bowtie_options
@@ -205,12 +232,38 @@ def main():
     stderr_log_output = opts.log_directory + "/" + 'gene_finder'+ ".stderr"
     stdout_log_output = opts.log_directory + "/" + 'gene_finder'+ ".stdout"
     logger = log_writer.setup_logger(stdout_log_output, stderr_log_output)
+
     if workflow_name != None:
-        gene_finder_functions.run_gene_finder(logger,outdir,fasta_file,workflow_file,fastq_files,bowtie_options,ids,cut_off,minimum_coverage,opts.log_directory,workflow_name=workflow_name,version=version)
-        try_and_except(stderr_log_output,write_component_complete,opts.output_directory)
+        gene_finder_functions.run_gene_finder(logger,
+                                    outdir,
+                                    fasta_file,
+                                    workflow_file,
+                                    fastq_files,
+                                    bowtie_options,
+                                    ids,
+                                    cut_off,
+                                    minimum_coverage,
+                                    opts.log_directory,
+                                    workflow_name=workflow_name,
+                                    version=version)
+        try_and_except(stderr_log_output,
+                       write_component_complete,
+                       opts.output_directory)
+
     elif workflow_name == None:
         print "this condition"
-        gene_finder_functions.run_gene_finder(logger,outdir,fasta_file,workflow_file,fastq_files,bowtie_options,ids,cut_off,minimum_coverage,opts.log_directory,workflow_name="None",version="None")
+        gene_finder_functions.run_gene_finder(logger,
+                                    outdir,
+                                    fasta_file,
+                                    workflow_file,
+                                    fastq_files,
+                                    bowtie_options,
+                                    ids,
+                                    cut_off,
+                                    minimum_coverage,
+                                    opts.log_directory,
+                                    workflow_name="None",
+                                    version="None")
 
 main()
 
