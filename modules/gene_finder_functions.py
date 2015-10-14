@@ -30,34 +30,34 @@ import extract_quality_metrics
 import log_writer
 from utility_functions import *
 
-"""
-Function: run gene finder:
-- create tmp file in gene_finder results folder
-- index reference file 
-- generate SAM, BAMs and mpileup
-- Parse a pileup file 
-- extract_quality_metrics
-- find best_hits
-- report result in xml file
-
-Input:
-- outdir[str]: path to output_directory
-- fasta_file[str]: full path to reference fasta file
-- fastq_files[list of two elements]: full path to the fastq_forward and fastq_reverse
-- bowtie_options[list]: list bowtie_options, default:['-q', '--very-sensitive-local', '--no-unal', '-a']
-- ids[str]: sample id (eg. NGSLIMSID_molis id)
-- cut_off[str]: first number is the cut off to be used used to identify mix at each position when parsing the pileup file (e.g. ......,,,,,,A,T,,,,, if match >= 84 => no mix else mix)
-	second number is the cut off to be used used to identify deletions at each position when parsing the pileup file (e.g. ......,,,*****,*,,,,, if nb of * >= 50 => deletion)
-- minimum_coverage[integer]: default [5] coverage at any position should be over 5% of the maximum coverage depth for the gene to be considered acceptable otherwise gap.
-- log_directory[str]: full path to the logs folder
-- workflow_name[str]: species_workflow (eg. staphylococcus_typing)
-- version[str]: verion number (eg. 1-0-0)
-
-Returns
-Write result in xml file
-"""
 
 def run_gene_finder(logger,outdir,fasta_file,workflow_file, fastq_files,bowtie_options,ids,cut_off,minimum_coverage,log_directory, workflow_name="",version=""):
+    """
+    Function: run gene finder:
+    - create tmp file in gene_finder results folder
+    - index reference file 
+    - generate SAM, BAMs and mpileup
+    - Parse a pileup file 
+    - extract_quality_metrics
+    - find best_hits
+    - report result in xml file
+    
+    Input:
+    - outdir[str]: path to output_directory
+    - fasta_file[str]: full path to reference fasta file
+    - fastq_files[list of two elements]: full path to the fastq_forward and fastq_reverse
+    - bowtie_options[list]: list bowtie_options, default:['-q', '--very-sensitive-local', '--no-unal', '-a']
+    - ids[str]: sample id (eg. NGSLIMSID_molis id)
+    - cut_off[str]: first number is the cut off to be used used to identify mix at each position when parsing the pileup file (e.g. ......,,,,,,A,T,,,,, if match >= 84 => no mix else mix)
+    	second number is the cut off to be used used to identify deletions at each position when parsing the pileup file (e.g. ......,,,*****,*,,,,, if nb of * >= 50 => deletion)
+    - minimum_coverage[integer]: default [5] coverage at any position should be over 5% of the maximum coverage depth for the gene to be considered acceptable otherwise gap.
+    - log_directory[str]: full path to the logs folder
+    - workflow_name[str]: species_workflow (eg. staphylococcus_typing)
+    - version[str]: verion number (eg. 1-0-0)
+    
+    Returns
+    Write result in xml file
+    """
     stderr_log_output = log_directory + "/" + 'gene_finder'+ ".stderr"    
     forward_fastq = fastq_files[0]
     reverse_fastq = fastq_files[1]
