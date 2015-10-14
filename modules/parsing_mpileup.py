@@ -26,27 +26,27 @@ for module_folder_path in module_folder_paths:
 from utility_functions import *
 import log_writer
 
-"""
-Function
-Extract length of ref sequences by parsing reference.fasta.fai file and parse samtools pileup file.
-Input:
--fasta_file[str]:full path to reference fasta file
--cut_off[str]:
-    first number is the cut off to be used to determine mix at each position when parsing the pileup file (e.g. ......,,,,,,A,T,,,,, if match >= 84 => no mix else mix)
-	second number is the cut off to be used to determine indels at each position when parsing the pileup file (e.g. ......,,,*****,*,,,,, if nb of * >= 50 => deletion)
--minimum_coverage[str]:check if the min depth of coverage is 5% of the maximum depth detected amomgst all positions for a given gene
--outdir[str]: path to output_directory
--workflow_name[str]: species_workflow (eg. staphylococcus_typing)
--version[str]: verion number (eg. 1-0-0)
--prefix[str]: sample_id (eg. molis id)
-- logger: python class logging.Logger created with stderr and stdout paths
-
-Return
-mpileup_dictionary[dictionary]: key=gene_id, value=dictionary
-dictionary: keys ='sequence_raw','positions_infos','positions_indels_probabilities','position_deletions','position_insertions', 'position_mismatchs', 'positions_mix', 'positions_low_coverage', 'allele_length','positions_accepted_depth', 'inserted_nuc'
-            values = dictionary, string or integer depends on key
-"""
 def read_mipelup(fasta_file,cut_off,minimum_coverage,outdir,workflow_name,version,prefix,logger):
+    """
+    Function
+    Extract length of ref sequences by parsing reference.fasta.fai file and parse samtools pileup file.
+    Input:
+    -fasta_file[str]:full path to reference fasta file
+    -cut_off[str]:
+        first number is the cut off to be used to determine mix at each position when parsing the pileup file (e.g. ......,,,,,,A,T,,,,, if match >= 84 => no mix else mix)
+    	second number is the cut off to be used to determine indels at each position when parsing the pileup file (e.g. ......,,,*****,*,,,,, if nb of * >= 50 => deletion)
+    -minimum_coverage[str]:check if the min depth of coverage is 5% of the maximum depth detected amomgst all positions for a given gene
+    -outdir[str]: path to output_directory
+    -workflow_name[str]: species_workflow (eg. staphylococcus_typing)
+    -version[str]: verion number (eg. 1-0-0)
+    -prefix[str]: sample_id (eg. molis id)
+    - logger: python class logging.Logger created with stderr and stdout paths
+    
+    Return
+    mpileup_dictionary[dictionary]: key=gene_id, value=dictionary
+    dictionary: keys ='sequence_raw','positions_infos','positions_indels_probabilities','position_deletions','position_insertions', 'position_mismatchs', 'positions_mix', 'positions_low_coverage', 'allele_length','positions_accepted_depth', 'inserted_nuc'
+                values = dictionary, string or integer depends on key
+    """
     fai_file = fasta_file + ".fai"
     pileup_file = outdir + "/tmp/" + prefix + ".pileup"
     sorted_bam = outdir + "/tmp/" + prefix + ".sorted.bam"
