@@ -69,9 +69,10 @@ import os, os.path, sys, subprocess, getopt, argparse, glob, yaml, inspect
 
 module_folder_paths = ["modules"]
 for module_folder_path in module_folder_paths:
-	module_folder = os.path.realpath(os.path.abspath(os.path.join(os.path.split(inspect.getfile( inspect.currentframe() ))[0],module_folder_path)))
-	if module_folder not in sys.path:
-		sys.path.insert(1, module_folder)
+    module_folder = os.path.realpath(os.path.abspath(os.path.join(os.path.split(inspect.getfile( inspect.currentframe() ))[0],module_folder_path)))
+    if module_folder not in sys.path:
+        sys.path.insert(1, module_folder)
+
 from utility_functions import *
 import log_writer
 import gene_finder_functions
@@ -80,12 +81,11 @@ import parsing_mpileup
 import extract_quality_metrics
 
 def check_file_exists(filepath, file_description):
-        if not os.path.exists(filepath):
-            print(file_description + " (" + filepath + ") does not exist")
-            sys.exit(1)
-        else:
-            print file_description + " detected;" + filepath
-		
+    if not os.path.exists(filepath):
+        print(file_description + " (" + filepath + ") does not exist")
+        sys.exit(1)
+    else:
+        print file_description + " detected;" + filepath
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-input_directory', '-i', help='please provide an input directory')
@@ -110,11 +110,11 @@ def main():
         parser.print_help()
         sys.exit()
     else:
-	fastq_files = []
-	glob_pattern = "*.processed*.fastq*"
-	ids = None
-	workflow_name = None
-	version = None
+        fastq_files = []
+        glob_pattern = "*.processed*.fastq*"
+        ids = None
+        workflow_name = None
+        version = None
 
     if opts.workflow:
         if not opts.input_directory:
@@ -246,9 +246,10 @@ def main():
                                     opts.log_directory,
                                     workflow_name=workflow_name,
                                     version=version)
-        try_and_except(stderr_log_output,
-                       write_component_complete,
-                       opts.output_directory)
+#        try_and_except(stderr_log_output,
+#                       write_component_complete,
+#                       opts.output_directory)
+        return 0
 
     elif workflow_name == None:
         print "this condition"
@@ -265,5 +266,12 @@ def main():
                                     workflow_name="None",
                                     version="None")
 
-main()
+if __name__ == '__main__':
+    rc = main()
+    if rc is None:
+        pass
+    elif rc:
+        exit(rc)
+    else:
+        write_component_complete(opts.output_directory)
 
