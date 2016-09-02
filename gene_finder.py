@@ -121,7 +121,7 @@ parser.add_argument('--log_directory', '-log', help='please provide the path for
 
 opts = parser.parse_args()
 
-def main():
+def main(opts):
     if (len(sys.argv) <= 1):
         parser.print_help()
         sys.exit()
@@ -309,7 +309,7 @@ def main():
                                     version="None")
 
 if __name__ == '__main__':
-    rc = main()
+    rc = main(opts)
     if rc is None:
         pass
     elif rc:
