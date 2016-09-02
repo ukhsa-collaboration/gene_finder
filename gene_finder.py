@@ -8,8 +8,21 @@ def help_function():
 	    [usage1]: -w [workflow] -i [input_directory] -o [output_directory:default in input directory]
 	    [usage2]: -i [input_directory] -gf [path to gene reference directory] -o [output_directory:default in input directory]
 	    [usage3]: -1 [path fastq 1] -2 [path fastq 2] -gf [path to gene reference directory] -o [output_directory:default in fastq directory]
+
+    reference directory mapping
+    ---------------------------
+    The phe/gene_finder modulefile implements automated mappings to workflow-
+    specific reference directories provided the pre-requisite export of the
+    workflow_name to the env_var WORKFLOW_NAME. In these circumstances the
+    arg passed to the -obn | -output_dir_basename param will be used to name
+    both the output dir and the log files.
+
+    In the absence of the pre-requisite export, this automated mapping does
+    not occur; in these circumstances the full path to a reference directory
+    needs to be be passed to the -gf | --gene_file_directory param.
 	
-	       optional
+    optional params
+    ---------------
 	       -bowtie-options:(list),default=['-q','--very-sensitive-local','--no-unal','-a']
 	       -cut_off':(str), cut-off used to identify mix (first integer) and indels (second integer), default='86:50' mix is considered if non-identical reads are < 86% of total reads, indel is considered if  > 50% of total reads indicate so.
 	       -min_cov:(int), cut_off used to define minimum acceptable coverage at each position, default=5 acceptable coverage correpond to 5% of maximum coverage detected among all positions for a given gene.
