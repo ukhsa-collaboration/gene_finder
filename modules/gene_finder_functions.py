@@ -19,9 +19,9 @@ import shutil
 
 module_folder_paths = ["modules"]
 for module_folder_path in module_folder_paths:
-	module_folder = os.path.realpath(os.path.abspath(os.path.join(os.path.split(inspect.getfile( inspect.currentframe() ))[0],module_folder_path)))
-	if module_folder not in sys.path:
-		sys.path.insert(1, module_folder)
+    module_folder = os.path.realpath(os.path.abspath(os.path.join(os.path.split(inspect.getfile( inspect.currentframe() ))[0],module_folder_path)))
+    if module_folder not in sys.path:
+        sys.path.insert(1, module_folder)
 
 import gene_finder_functions
 import generate_mpileup_file
@@ -49,7 +49,7 @@ def run_gene_finder(logger,outdir,fasta_file,workflow_file, fastq_files,bowtie_o
     - bowtie_options[list]: list bowtie_options, default:['-q', '--very-sensitive-local', '--no-unal', '-a']
     - ids[str]: sample id (eg. NGSLIMSID_molis id)
     - cut_off[str]: first number is the cut off to be used used to identify mix at each position when parsing the pileup file (e.g. ......,,,,,,A,T,,,,, if match >= 84 => no mix else mix)
-    	second number is the cut off to be used used to identify deletions at each position when parsing the pileup file (e.g. ......,,,*****,*,,,,, if nb of * >= 50 => deletion)
+        second number is the cut off to be used used to identify deletions at each position when parsing the pileup file (e.g. ......,,,*****,*,,,,, if nb of * >= 50 => deletion)
     - minimum_coverage[integer]: default [5] coverage at any position should be over 5% of the maximum coverage depth for the gene to be considered acceptable otherwise gap.
     - log_directory[str]: full path to the logs folder
     - workflow_name[str]: species_workflow (eg. staphylococcus_typing)
@@ -63,7 +63,7 @@ def run_gene_finder(logger,outdir,fasta_file,workflow_file, fastq_files,bowtie_o
     reverse_fastq = fastq_files[1]
     if not os.path.exists(outdir + '/tmp'):
         os.mkdir(outdir + '/tmp')
-	
+    
     path_to_tmp_file = outdir + '/tmp'    
     shutil.copy(fasta_file, path_to_tmp_file)
     fasta_file = path_to_tmp_file + "/reference.fasta"
@@ -77,27 +77,27 @@ def run_gene_finder(logger,outdir,fasta_file,workflow_file, fastq_files,bowtie_o
     xml_output,control_coverage_value,mix_indicator= try_and_except(stderr_log_output,best_hit,workflow_file,pileup_quality_dictionary,path_to_reference_folder,outdir)
     try_and_except(stderr_log_output,report_xml,outdir,workflow_name,version,ids,xml_output,control_coverage_value,mix_indicator)
     for root, dirs, files in os.walk(path_to_tmp_file):
-	print "dirs", dirs
-	for currentFile in files:
-		exts=('.sam', '.mod', '.bt2','fai')
-		if any(currentFile.lower().endswith(ext) for ext in exts):
-			os.remove(os.path.join(root, currentFile))
-	for di in dirs:
-		shutil.rmtree(os.path.join(root,di))
-		
-		
+        print "dirs", dirs
+        for currentFile in files:
+            exts=('.sam', '.mod', '.bt2','fai')
+            if any(currentFile.lower().endswith(ext) for ext in exts):
+                os.remove(os.path.join(root, currentFile))
+        for di in dirs:
+            shutil.rmtree(os.path.join(root,di))
+        
+        
 
-"""
-Function
-from check_variant_transcription if compared nt sequence are equal: Translate nt Bio.seq sequence, perform clustalw alignment and report aa changes between two sequences
-Input:
-- reference_seq['Bio.Seq.Seq'>]: reference nuclotide sequence
-- target_fasta_sequence['Bio.Seq.Seq'> ]: target nuclotide sequence
-Returns
-final_report[dict]: key[integer]= position value[str]= amino acid changes
-e.g.  {145: 'no_stop', 37: 'I-X'}
-"""
 def compare_protein_sequence(reference_seq,target_seq):
+    """
+    Function
+    from check_variant_transcription if compared nt sequence are equal: Translate nt Bio.seq sequence, perform clustalw alignment and report aa changes between two sequences
+    Input:
+    - reference_seq['Bio.Seq.Seq'>]: reference nuclotide sequence
+    - target_fasta_sequence['Bio.Seq.Seq'> ]: target nuclotide sequence
+    Returns
+    final_report[dict]: key[integer]= position value[str]= amino acid changes
+    e.g.  {145: 'no_stop', 37: 'I-X'}
+    """
     mutations = {}
     ref_prot = list(reference_seq.translate())
     target_prot = list(target_seq.translate())
@@ -116,18 +116,18 @@ def compare_protein_sequence(reference_seq,target_seq):
         mutations[len(list(target_prot))] = 'no_stop'
     return mutations
 
-"""
-Function
-from check_variant_transcription if compared nt sequence not equal: Translate nt Bio.seq sequence, perform clustalw alignment and report aa changes between two sequences
-Input:
-- reference_seq['Bio.Seq.Seq'>]: reference nuclotide sequence
-- target_fasta_sequence['Bio.Seq.Seq'> ]: target nuclotide sequence
-Returns
-final_report[dict]: key[integer]= position value[str]= amino acid changes
-e.g.  {145: 'no_stop', 37: 'I-X'}
-"""
    
 def clustalw_align(reference_seq,target_seq,output):
+    """
+    Function
+    from check_variant_transcription if compared nt sequence not equal: Translate nt Bio.seq sequence, perform clustalw alignment and report aa changes between two sequences
+    Input:
+    - reference_seq['Bio.Seq.Seq'>]: reference nuclotide sequence
+    - target_fasta_sequence['Bio.Seq.Seq'> ]: target nuclotide sequence
+    Returns
+    final_report[dict]: key[integer]= position value[str]= amino acid changes
+    e.g.  {145: 'no_stop', 37: 'I-X'}
+    """
 
     clustal_output = output + '/tmp/clustal_align'
     if os.path.exists(clustal_output):
@@ -167,19 +167,19 @@ def clustalw_align(reference_seq,target_seq,output):
         final_report[len(list(target_prot))] = 'no_stop'
     return final_report
 
-"""
-Function
-from best_hit function: take nt sequence of reference and target seq, translate into proteins and compare aa sequence by checking elements in sequence lists or by clustalw alignment if different length 
-Input:  
-- reference_seq['Bio.Seq.Seq'>]: reference nuclotide sequence
-- target_fasta_sequence['Bio.Seq.Seq'> ]: target nuclotide sequence
-- outdir[str]: full path to the output dir  
-
-Returns
-mutations[dict]Position and change of mutated amino acid sequence including non stop or early stop
-e.g.  {145: 'no_stop', 37: 'I-X'}
-"""
 def check_variant_transcription(reference_seq,target_fasta_sequence,outdir):
+    """
+    Function
+    from best_hit function: take nt sequence of reference and target seq, translate into proteins and compare aa sequence by checking elements in sequence lists or by clustalw alignment if different length 
+    Input:  
+    - reference_seq['Bio.Seq.Seq'>]: reference nuclotide sequence
+    - target_fasta_sequence['Bio.Seq.Seq'> ]: target nuclotide sequence
+    - outdir[str]: full path to the output dir  
+    
+    Returns
+    mutations[dict]Position and change of mutated amino acid sequence including non stop or early stop
+    e.g.  {145: 'no_stop', 37: 'I-X'}
+    """
   
     if len(target_fasta_sequence) == 1:
         if len(target_fasta_sequence[0].seq) == len(reference_seq):           
@@ -192,13 +192,13 @@ def check_variant_transcription(reference_seq,target_fasta_sequence,outdir):
     else:
         return "ND"
 
-"""
-Function
-Take position of mutations of interest from workflow.txt file and return a list of position
-Input[str] = eg. 5,7,10-15,20
-return[list] = eg. [5,7,10,11,12,13,14,15,20]
-"""
 def pos_of_int_to_list(pos_of_int):
+    """
+    Function
+    Take position of mutations of interest from workflow.txt file and return a list of position
+    Input[str] = eg. 5,7,10-15,20
+    return[list] = eg. [5,7,10,11,12,13,14,15,20]
+    """
     if pos_of_int != 'N':
         total_list = []
         pos_int_list = pos_of_int.replace(" ","").strip("\n").split(",")
@@ -215,22 +215,22 @@ def pos_of_int_to_list(pos_of_int):
     else:
         return None
 
-"""
-Function
-Take pileup_hash [dict] generated in extract_quality_metrics function and report only best hits if multiple reference sequences exist from a gene
-update the dictionary with info from workflow.txt eg. desrciption, report_type
-calculate control-coverage and mix_indicator values from chromosoml targets
-Input:
-- pileup_hash [dict] : generated in extract_quality_metrics function
-- path_to_reference_folder[str]: full path to the refrence folder 
-- outdir[str]: full path to the output dir 
-- workflow_file[str]: full path tp workflow.txt
-Returns
--xml_output[dict]: pileup_hash dictionary updated with best_hits info for variants
--control_coverage_value[float]: average depth from all chromosomal reference genes or 'failed' in chromosomal genes are not detected
--mix_indicator[str] = nb of mix positions in chromosomal reference genes eg. (5:5052) (5 mix positions: total nb of chromosomal positions) or 'failed' in chromosomal genes are not detected
-""" 
 def best_hit(workflow_file,pileup_hash,path_to_reference_folder,outdir):
+    """
+    Function
+    Take pileup_hash [dict] generated in extract_quality_metrics function and report only best hits if multiple reference sequences exist from a gene
+    update the dictionary with info from workflow.txt eg. desrciption, report_type
+    calculate control-coverage and mix_indicator values from chromosoml targets
+    Input:
+    - pileup_hash [dict] : generated in extract_quality_metrics function
+    - path_to_reference_folder[str]: full path to the refrence folder 
+    - outdir[str]: full path to the output dir 
+    - workflow_file[str]: full path tp workflow.txt
+    Returns
+    -xml_output[dict]: pileup_hash dictionary updated with best_hits info for variants
+    -control_coverage_value[float]: average depth from all chromosomal reference genes or 'failed' in chromosomal genes are not detected
+    -mix_indicator[str] = nb of mix positions in chromosomal reference genes eg. (5:5052) (5 mix positions: total nb of chromosomal positions) or 'failed' in chromosomal genes are not detected
+    """ 
     total_mix ={}
     control_coverage = []
     list_of_keys = pileup_hash.keys()
@@ -397,22 +397,22 @@ def best_hit(workflow_file,pileup_hash,path_to_reference_folder,outdir):
     return xml_output,control_coverage_value,mix_indicator
 
 
-"""
-Function
-generate xml file from dictionary/info generated by best_hit function
-Input:  
--outdir[str]: full path to the output dir
--workflow_name[str]: species_workflow (eg. staphylococcus_typing
--version[str]: version number
--prefix[str]: sampleid (e.g. NGSLIMS_molis number, 9188_H14276008707)
--xml_output[dict]:primary key=gene_id, value= dictionary with keys= type of metric and value= value metric
--control_coverage_value[float]: from best_hit function
-
-- Returns
- generate and print xml file in output folder
-
-""" 
 def report_xml(outdir,workflow_name,version,prefix,xml_output,control_coverage_value,mix_indicator):
+    """
+    Function
+    generate xml file from dictionary/info generated by best_hit function
+    Input:  
+    -outdir[str]: full path to the output dir
+    -workflow_name[str]: species_workflow (eg. staphylococcus_typing
+    -version[str]: version number
+    -prefix[str]: sampleid (e.g. NGSLIMS_molis number, 9188_H14276008707)
+    -xml_output[dict]:primary key=gene_id, value= dictionary with keys= type of metric and value= value metric
+    -control_coverage_value[float]: from best_hit function
+    
+    - Returns
+     generate and print xml file in output folder
+    
+    """ 
 
     genome_id = prefix.split(".")[0]   
     xml_log_file = open(outdir + "/" + genome_id + ".results.xml", "w")
