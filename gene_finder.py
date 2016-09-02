@@ -94,9 +94,13 @@ parser.add_argument('-fastq_1', '-1', help='Fastq file pair 1')
 parser.add_argument('-fastq_2', '-2', help='Fastq file pair 2')
 parser.add_argument('-output_directory', '-o',type=str,help='Output root directory')
 #parser.add_argument('-gene_file_directory', '-gf',help='Directory containing the reference genbank and fasta files')
+parser.add_argument('-obn',
+                    '-output_dir_basename',
+                    help='pass serotyping component name; used to name output dir; over-ridden by any -output_dir|-o arg; [Intended solely for use in automated qsub_script calls]')
 parser.add_argument('--gene_file_directory',
                     '-gf',
                     default=os.environ.get('GENE_FINDER_REFERENCE_DIR'),
+                    #tmp#default=os.environ.get('ESCHERICHIA_COLI_SEROTYPING_REFERENCE_DIR'),
                     help='Path to dir containing a multientry reference.fasta file and a workflow.txt file.')
 parser.add_argument('-bowtie_options','-bopt',help='path_to_clustalw',default=['-q','--very-sensitive-local','--no-unal','-a'])
 parser.add_argument('-cut_off', '-c',type=str, help='cut_off values Sub:Ind',default='84:50')
@@ -124,16 +128,18 @@ def main():
             check_file_exists(opts.input_directory, 'input directory')
             fastq_files = glob.glob(opts.input_directory + "/" + glob_pattern)
 
-        #superceeded for LMFILES/newCAS2# opts.gene_file_directory = os.path.dirname(os.path.realpath(__file__)) + "/gene_reference_data/" + opts.workflow
-
-        # GENE_FINDER_REFERENCE_DIR is an environment variable assigned by module /phe/phe_ref/<workflow_name>/gene_finder_reference/<module_version>
-        # This phe_ref module is loaded by the phe/gene_finder/<Major>-<Minor>prereq module; the pre-requisiite for this load is the assignment of the 
-        # workflow_name (i.e. workflow.split(.)[0]) to the environment variable WORKFLOW_NAME as below
+        # GENE_FINDER_REFERENCE_DIR is an environment variable assigned by module 
+        # /phe/phe_ref/<workflow_name>/gene_finder_reference
+        # This phe_ref module is loaded by the phe/gene_finder module, given the 
+        # pre-requisite assignment of the workflow_name (i.e. workflow.split(.)[0]) 
+        # to the environment variable WORKFLOW_NAME as below
         # export WORKFLOW_NAME=workflow_name
 
-        ## 2015OCT13 now set as default within parser when module phe/gene_finder/<Major>-<Minor>prereq is loaded
-        ## module phe/gene_finder/<Major>-<Minor> does not assign the GENE_FINDER_REFERENCE_DIR env variable, leaving
-        ## opt.gene_file_directory ==  None. That condition needs amended before proceeding
+        ## GENE_FINDER_REFERENCE_DIR is set as default within parser when the 
+        ## module phe/gene_finder is loaded only if the export pre-requisite above 
+        ## is met. If the pre-requisite is not met, the environment variable 
+        ## GENE_FINDER_REFERENCE_DIR is not set, leaving opt.gene_file_directory == None. 
+        ## That condition needs amended before proceeding
         if not opts.gene_file_directory:
             print("If you are using the 'workflow' entry point but have not loaded gene_finder using the 'prereq' module, you need also to pass to the -gf|--gene_file_directory param a path to a reference_dir containing files reference.fasta and workflow.txt")
             sys.exit(1)
