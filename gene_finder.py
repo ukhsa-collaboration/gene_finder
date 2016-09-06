@@ -182,7 +182,7 @@ def main(opts):
         check_file_exists(opts.fastq_2, 'Fastq 2')
         if not opts.gene_file_directory:
             print("If you are passing full processed fastq paths to the fastq-1 and fastq-2 params, you need also to pass to the -gf|--gene_file_directory param a path to a reference_dir containing files reference.fasta and workflow.txt")
-                sys.exit(1)
+            sys.exit(1)
         check_file_exists(opts.gene_file_directory, 'gene_file_directory')
 
         if not opts.output_directory:
@@ -213,7 +213,7 @@ def main(opts):
         check_file_exists(opts.input_directory, 'input_directory')
         if not opts.gene_file_directory:
             print("If you are passing a directory containing processed fastqs as arg to the -i|--input_directory param, you need also to pass to the -gf|--gene_file_directory param a path to a reference_dir containing files reference.fasta and workflow.txt")
-                sys.exit(1)
+            sys.exit(1)
         check_file_exists(opts.gene_file_directory, 'gene_file_directory')
 
         # glob preferentially for processed fastq files
