@@ -150,7 +150,7 @@ def main(opts):
         ## GENE_FINDER_REFERENCE_DIR is not set, leaving opt.gene_file_directory == None. 
         ## That condition needs amended before proceeding
         if not opts.gene_file_directory:
-            print("If you are using the 'workflow' entry point but have not loaded gene_finder using the 'prereq' module, you need also to pass to the -gf|--gene_file_directory param a path to a reference_dir containing files reference.fasta and workflow.txt")
+            print("You are using the 'workflow' entry point but did not export the workflow_name to env_var WORKFLOW_NAME before loading the gene_finder modulefile; you consequently need also to pass to the -gf|--gene_file_directory param a path to a reference_dir containing files reference.fasta and workflow.txt")
             sys.exit(1)
 
         if len(fastq_files) < 2:
@@ -161,7 +161,7 @@ def main(opts):
                 opts.output_directory = opts.input_directory + '/gene_finder'
             else:
                 opts.output_directory = '{}/{}'.format(opts.input_directory, opts.obn)
-            if not os.path.isdir(opts.output_directory): os.makedirs(opts.output_directory) #make output_directory
+        if not os.path.isdir(opts.output_directory): os.makedirs(opts.output_directory) #make output_directory
 
         (seqDir,seqFileName) = os.path.split(fastq_files[0])
         split_seqFileName = seqFileName.split('.')
@@ -181,7 +181,7 @@ def main(opts):
         check_file_exists(opts.fastq_1, 'Fastq 1')
         check_file_exists(opts.fastq_2, 'Fastq 2')
         if not opts.gene_file_directory:
-            print("If you are passing full processed fastq paths to the fastq-1 and fastq-2 params, you need also to pass to the -gf|--gene_file_directory param a path to a reference_dir containing files reference.fasta and workflow.txt")
+            print("You are passing full fastq paths to the fastq-1 and fastq-2 params but did not first export the workflow_name to the env_var WORKFLOW_NAME; you consequently need also to pass to the -gf|--gene_file_directory param a path to a reference_dir containing files reference.fasta and workflow.txt")
             sys.exit(1)
         check_file_exists(opts.gene_file_directory, 'gene_file_directory')
 
@@ -192,14 +192,14 @@ def main(opts):
                 opts.output_directory = '{}/{}'.format(os.path.dirname(opts.fastq_1), opts.obn)
             if not os.path.isdir(opts.output_directory):
                 os.makedirs(opts.output_directory)
-                opts.log_directory = os.path.dirname(opts.fastq_1) + '/logs'
-                if not os.path.isdir(opts.log_directory): os.makedirs(opts.log_directory) #make log_directory  
+            opts.log_directory = os.path.dirname(opts.fastq_1) + '/logs'
+            if not os.path.isdir(opts.log_directory): os.makedirs(opts.log_directory) #make log_directory  
                 
         else:
             if not os.path.isdir(opts.output_directory):
                 os.makedirs(opts.output_directory)
-                opts.log_directory = opts.output_directory + '/logs'
-                if not os.path.isdir(opts.log_directory): os.makedirs(opts.log_directory) #make log_directory
+            opts.log_directory = opts.output_directory + '/logs'
+            if not os.path.isdir(opts.log_directory): os.makedirs(opts.log_directory) #make log_directory
                 
         fastq_files.append(opts.fastq_1)
         fastq_files.append(opts.fastq_2)
@@ -212,7 +212,7 @@ def main(opts):
     elif opts.input_directory:
         check_file_exists(opts.input_directory, 'input_directory')
         if not opts.gene_file_directory:
-            print("If you are passing a directory containing processed fastqs as arg to the -i|--input_directory param, you need also to pass to the -gf|--gene_file_directory param a path to a reference_dir containing files reference.fasta and workflow.txt")
+            print("You are passing a directory containing processed fastqs as arg to the -i|--input_directory param but did not first export the workflow_name to env_var WORKFLOW_NAME; you consequently need also to pass to the -gf|--gene_file_directory param a path to a reference_dir containing files reference.fasta and workflow.txt")
             sys.exit(1)
         check_file_exists(opts.gene_file_directory, 'gene_file_directory')
 
