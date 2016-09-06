@@ -150,13 +150,8 @@ def main(opts):
         ## GENE_FINDER_REFERENCE_DIR is not set, leaving opt.gene_file_directory == None. 
         ## That condition needs amended before proceeding
         if not opts.gene_file_directory:
-            if not opts.obn:
-                print("If you are using the 'workflow' entry point but have not loaded gene_finder using the 'prereq' module, you need also to pass to the -gf|--gene_file_directory param a path to a reference_dir containing files reference.fasta and workflow.txt")
+            print("If you are using the 'workflow' entry point but have not loaded gene_finder using the 'prereq' module, you need also to pass to the -gf|--gene_file_directory param a path to a reference_dir containing files reference.fasta and workflow.txt")
                 sys.exit(1)
-            else:
-                # output_dir_basename is component name; use to map to ref_dir
-                opts.gene_file_directory = os.environ[
-                                       '{}_REFERENCE_DIR'.format(opts.obn.upper())] # tracetrace if WORKFLOW_NAME has not been exported before modulefile is loaded
 
         if len(fastq_files) < 2:
             print "Fastq files are not pairs!"
@@ -186,13 +181,8 @@ def main(opts):
         check_file_exists(opts.fastq_1, 'Fastq 1')
         check_file_exists(opts.fastq_2, 'Fastq 2')
         if not opts.gene_file_directory:
-            if not opts.obn:
-                print("If you are passing full processed fastq paths to the fastq-1 and fastq-2 params, you need also to pass to the -gf|--gene_file_directory param a path to a reference_dir containing files reference.fasta and workflow.txt")
+            print("If you are passing full processed fastq paths to the fastq-1 and fastq-2 params, you need also to pass to the -gf|--gene_file_directory param a path to a reference_dir containing files reference.fasta and workflow.txt")
                 sys.exit(1)
-            else:
-                # output_dir_basename is component name; use to map to ref_dir
-                opts.gene_file_directory = os.environ[
-                                       '{}_REFERENCE_DIR'.format(opts.obn.upper())] # tracetrace if WORKFLOW_NAME has not been exported before modulefile is loaded
         check_file_exists(opts.gene_file_directory, 'gene_file_directory')
 
         if not opts.output_directory:
@@ -222,13 +212,8 @@ def main(opts):
     elif opts.input_directory:
         check_file_exists(opts.input_directory, 'input_directory')
         if not opts.gene_file_directory:
-            if not opts.obn:
-                print("If you are passing a directory containing processed fastqs as arg to the -i|--input_directory param, you need also to pass to the -gf|--gene_file_directory param a path to a reference_dir containing files reference.fasta and workflow.txt")
+            print("If you are passing a directory containing processed fastqs as arg to the -i|--input_directory param, you need also to pass to the -gf|--gene_file_directory param a path to a reference_dir containing files reference.fasta and workflow.txt")
                 sys.exit(1)
-            else:
-                # output_dir_basename is component name; use to map to ref_dir
-                opts.gene_file_directory = os.environ[
-                                       '{}_REFERENCE_DIR'.format(opts.obn.upper())] # tracetrace if WORKFLOW_NAME has not been exported before modulefile is loaded
         check_file_exists(opts.gene_file_directory, 'gene_file_directory')
 
         # glob preferentially for processed fastq files
