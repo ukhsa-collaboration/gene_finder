@@ -13,7 +13,7 @@ def help_function():
     ---------------------------
     The phe/gene_finder modulefile implements automated mappings to workflow-
     specific reference directories provided the pre-requisite export of the
-    workflow_name to the env_var WORKFLOW_NAME. In these circumstances the
+    workflow_name to the env_var WORKFLOW_NAME. In these circumstances any
     arg passed to the -obn | -output_dir_basename param will be used to name
     both the output dir and the log files.
 
