@@ -151,7 +151,7 @@ def main(opts):
         ## That condition needs amended before proceeding
         if not opts.gene_file_directory:
             print("If you are using the 'workflow' entry point but have not loaded gene_finder using the 'prereq' module, you need also to pass to the -gf|--gene_file_directory param a path to a reference_dir containing files reference.fasta and workflow.txt")
-                sys.exit(1)
+            sys.exit(1)
 
         if len(fastq_files) < 2:
             print "Fastq files are not pairs!"
