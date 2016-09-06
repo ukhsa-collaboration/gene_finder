@@ -108,11 +108,10 @@ parser.add_argument('-fastq_2', '-2', help='Fastq file pair 2')
 parser.add_argument('-output_directory', '-o',type=str,help='Output root directory')
 parser.add_argument('-obn',
                     '-output_dir_basename',
-                    help='pass serotyping component name; used to name output dir; over-ridden by any -output_dir|-o arg; \n[Intended for use in automated qsub_script calls to workflow entry point, but implemented for all three entry points]')
+                    help='pass serotyping component name; used to name output dir & log files; over-ridden by any -output_dir|-o arg; \n[Intended solely for use in automated qsub_script calls to workflow entry point, but implemented for all three entry points]')
 parser.add_argument('--gene_file_directory',
                     '-gf',
                     default=os.environ.get('GENE_FINDER_REFERENCE_DIR'),
-                    #tmp#default=os.environ.get('ESCHERICHIA_COLI_SEROTYPING_REFERENCE_DIR'),
                     help='Path to dir containing a multientry reference.fasta file and a workflow.txt file.\nSet automatically by gene_finder modulefile if env_var WORKFLOW_NAME has been set.')
 parser.add_argument('-bowtie_options','-bopt',help='path_to_clustalw',default=['-q','--very-sensitive-local','--no-unal','-a'])
 parser.add_argument('-cut_off', '-c',type=str, help='cut_off values Sub:Ind',default='84:50')
