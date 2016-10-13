@@ -171,7 +171,7 @@ def main(opts):
         ids = ids[:-1]
         if not opts.log_directory:
             opts.log_directory = opts.input_directory + '/logs'
-            if not os.path.isdir(opts.log_directory): os.makedirs(opts.log_directory) #make log_directoryectory
+        if not os.path.isdir(opts.log_directory): os.makedirs(opts.log_directory) #make log_directory
         print 'opts:',opts #tmp#
 
 
