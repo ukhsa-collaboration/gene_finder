@@ -7,9 +7,9 @@
 
 # for Tcl script use only
 set     name            gene_finder
-set     version         2-2
-#set modroot /phengs/hpc_software/wgs_pipelines/software/phe/workflows/components/$name/$version
-set modroot /phengs/hpc_software/phe/workflows/components/$name/$version
+set     version         2-4
+set modroot /phengs/hpc_software/wgs_pipelines/software/phe/workflows/components/$name/$version
+#set modroot /phengs/hpc_software/phe/workflows/components/$name/$version
 #set modroot /phengs/hpc_storage/home/matthew/py/$name/$version
 
 proc ModulesHelp { } {
@@ -35,13 +35,19 @@ proc ModulesHelp { } {
 module-whatis "loads the $name environment and, optionally, reference_sets.
                 See 'module help' to understand its reference-loading behaviours.\n"
 
+# pipelines autoload phe/phe_ref modulefile
+# guardian WORKFLOW_NAME is exported by pipeline qsub_scripts
 if { [info exists ::env(WORKFLOW_NAME)] } {
     if { $::env(WORKFLOW_NAME) == "escherichia-coli-typing" } {
         module load phe/phe_ref/$::env(WORKFLOW_NAME)/gastro_serotyping_reference
     } elseif { $::env(WORKFLOW_NAME) == "listeria-typing" } {
         module load phe/phe_ref/$::env(WORKFLOW_NAME)/gastro_serotyping_reference
-    } else {
-        module load phe/phe_ref/$::env(WORKFLOW_NAME)/gene_finder_reference
+    } elseif { [info exists ::env(ACTIVE_COMPONENT)] } {
+        # monophasic_typhi_id_config delivers required phe/phe_ref equivalent
+        # guardian ACTIVE_COMPONENT is set by phe/monophasic_typhi_id modulefile
+        if { $::env(ACTIVE_COMPONENT) != "monophasic_typhi_id" } {
+            module load phe/phe_ref/$::env(WORKFLOW_NAME)/gene_finder_reference
+        }
     }
 }
 
@@ -59,4 +65,6 @@ module load pysam/python2.7/0.7.5
 module load yaml/1.1
 module load phe/common_modules
 
-conflict	phe/$name
+conflict	phe/gene_finder
+
+
