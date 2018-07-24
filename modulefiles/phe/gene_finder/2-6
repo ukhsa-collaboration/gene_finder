@@ -7,7 +7,7 @@
 
 # for Tcl script use only
 set     name            gene_finder
-set     version         2-5
+set     version         2-6
 set modroot /phengs/hpc_software/wgs_pipelines/software/phe/workflows/components/$name/$version
 #set modroot /phengs/hpc_software/phe/workflows/components/$name/$version
 #set modroot /phengs/hpc_storage/home/matthew/py/$name/$version
@@ -39,6 +39,10 @@ if { [info exists ::env(WORKFLOW_NAME)] } {
     if { $::env(WORKFLOW_NAME) == "escherichia-coli-typing" } {
         module load phe/phe_ref/$::env(WORKFLOW_NAME)/gastro_serotyping_reference
     } elseif { $::env(WORKFLOW_NAME) == "listeria-typing" } {
+        module load phe/phe_ref/$::env(WORKFLOW_NAME)/gastro_serotyping_reference
+    } elseif { $::env(WORKFLOW_NAME) == "yersinia-typing" } {
+        module load phe/phe_ref/$::env(WORKFLOW_NAME)/gastro_serotyping_reference
+    } elseif { $::env(WORKFLOW_NAME) == "vibrio-typing" } {
         module load phe/phe_ref/$::env(WORKFLOW_NAME)/gastro_serotyping_reference
     } elseif { [info exists ::env(ACTIVE_COMPONENT)] && $::env(ACTIVE_COMPONENT) == "monophasic_typhi_id" } {
         puts stderr "monophasic_typhi_id_config loads ref_set not genefinder module"
