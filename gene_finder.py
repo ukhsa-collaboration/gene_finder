@@ -115,7 +115,7 @@ parser.add_argument('--gene_file_directory',
                     help='Path to dir containing a multientry reference.fasta file and a workflow.txt file.\nSet automatically by gene_finder modulefile if env_var WORKFLOW_NAME has been set.')
 parser.add_argument('-bowtie_options','-bopt',help='path_to_clustalw',default=['-q','--very-sensitive-local','--no-unal','-a'])
 parser.add_argument('-cut_off', '-c',type=str, help='cut_off values Sub:Ind',default='84:50')
-parser.add_argument('-min_cov', '-m',type=str, help='min nb of reads for coverage confidence',default='5')
+parser.add_argument('-min_cov', '-m',type=str, help='min nb of reads for coverage confidence',default='10')
 parser.add_argument('--log_directory', '-log', help='please provide the path for log directory')
 
 opts = parser.parse_args()
