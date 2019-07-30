@@ -7,7 +7,7 @@
 
 # for Tcl script use only
 set     name            gene_finder
-set     version         2-6
+set     version         2-7
 set modroot /phengs/hpc_software/wgs_pipelines/software/phe/workflows/components/$name/$version
 #set modroot /phengs/hpc_software/phe/workflows/components/$name/$version
 #set modroot /phengs/hpc_storage/home/matthew/py/$name/$version

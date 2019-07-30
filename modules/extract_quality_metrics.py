@@ -59,18 +59,20 @@ value = value depends on metrics
 def extract_quality_metrics(mpileup_info_dictionary):   
     pileup_hash = {}
     for allele in mpileup_info_dictionary:
-        #print mpileup_info_dictionary[allele]
-        positions_infos = mpileup_info_dictionary[allele]['positions_infos']
-        positions_with_accepted_depth = mpileup_info_dictionary[allele]['positions_accepted_depth']
-        position_mismatchs = mpileup_info_dictionary[allele]['position_mismatchs']
-        total_inserted_nuc = mpileup_info_dictionary[allele]['inserted_nuc']
-        position_insertions = mpileup_info_dictionary[allele]['position_insertions']
-        positions_mix = mpileup_info_dictionary[allele]['positions_mix']
-        position_deletions = mpileup_info_dictionary[allele]['position_deletions']
-        positions_indels_probabilities = mpileup_info_dictionary[allele]['positions_indels_probabilities']
-        allele_length = mpileup_info_dictionary[allele]['allele_length']
-        sequence_raw =  mpileup_info_dictionary[allele]['sequence_raw']   
-        if len(positions_infos) != 0:
+        if mpileup_info_dictionary[allele]:
+            
+            print allele
+            print mpileup_info_dictionary[allele]
+            positions_infos = mpileup_info_dictionary[allele]['positions_infos']
+            positions_with_accepted_depth = mpileup_info_dictionary[allele]['positions_accepted_depth']
+            position_mismatchs = mpileup_info_dictionary[allele]['position_mismatchs']
+            total_inserted_nuc = mpileup_info_dictionary[allele]['inserted_nuc']
+            position_insertions = mpileup_info_dictionary[allele]['position_insertions']
+            positions_mix = mpileup_info_dictionary[allele]['positions_mix']
+            position_deletions = mpileup_info_dictionary[allele]['position_deletions']
+            positions_indels_probabilities = mpileup_info_dictionary[allele]['positions_indels_probabilities']
+            allele_length = mpileup_info_dictionary[allele]['allele_length']
+            sequence_raw =  mpileup_info_dictionary[allele]['sequence_raw']   
             if len(positions_with_accepted_depth) != 0:                
                 positions_with_reads_count = dict([(x,positions_infos[x]) for x in positions_infos if positions_infos[x] != '$' and positions_infos[x] != '*'])
                 max_depth =  max(positions_with_reads_count.values())

@@ -70,7 +70,7 @@ def run_gene_finder(logger,outdir,fasta_file,workflow_file, fastq_files,bowtie_o
     
     try_and_except(stderr_log_output,generate_mpileup_file.index_reference,fasta_file,logger)
     try_and_except(stderr_log_output,generate_mpileup_file.samtools_faidx,fasta_file,logger)
-    try_and_except(stderr_log_output, generate_mpileup_file.generate_mpileup,path_to_tmp_file,fasta_file,forward_fastq,reverse_fastq,outdir,workflow_name,version,ids,bowtie_options,logger)
+    try_and_except(stderr_log_output,generate_mpileup_file.generate_mpileup,path_to_tmp_file,fasta_file,forward_fastq,reverse_fastq,outdir,workflow_name,version,ids,bowtie_options,logger)
     pileup_dictionary = try_and_except(stderr_log_output, parsing_mpileup.read_mipelup,fasta_file,cut_off,minimum_coverage,outdir,workflow_name,version,ids,logger)
     pileup_quality_dictionary= try_and_except(stderr_log_output,extract_quality_metrics.extract_quality_metrics, pileup_dictionary)
     path_to_reference_folder = os.path.dirname(fasta_file)

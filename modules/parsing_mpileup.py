@@ -155,7 +155,7 @@ def parsing_mpileup(fasta_file,pileup_file,cut_off,minimum_coverage,size,sorted_
                 max_depth =  max(positions_infos.values())
                 ## define threshold for minimum nb of reads acceptable for coverage depth using minimum_coverage value: default=5
                 ## minimum_coverage value = percentage and can be changed using argument -m (-min_cov)
-                accepted_reads_depth = int(round(float(max_depth*int(minimum_coverage)/100),0))
+                accepted_reads_depth = int(minimum_coverage)
                 ## remove all positions_infos if number of reads is less than accepted_reads_depth:
                 positions_with_accepted_depth = dict([(x,positions_infos[x]) for x in positions_infos if int(positions_infos[x]) > accepted_reads_depth])
                 total_positions = range(1,allele_length +1)
