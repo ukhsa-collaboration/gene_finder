@@ -23,8 +23,9 @@ for module_folder_path in module_folder_paths:
 	module_folder = os.path.realpath(os.path.abspath(os.path.join(os.path.split(inspect.getfile( inspect.currentframe() ))[0],module_folder_path)))
 	if module_folder not in sys.path:
 		sys.path.insert(1, module_folder)
-from utility_functions import *
-import log_writer
+
+# from utility_functions import *
+# import log_writer
 
 def read_mipelup(fasta_file,cut_off,minimum_coverage,outdir,workflow_name,version,prefix,logger):
     """
@@ -41,7 +42,7 @@ def read_mipelup(fasta_file,cut_off,minimum_coverage,outdir,workflow_name,versio
     -version[str]: verion number (eg. 1-0-0)
     -prefix[str]: sample_id (eg. molis id)
     - logger: python class logging.Logger created with stderr and stdout paths
-    
+
     Return
     mpileup_dictionary[dictionary]: key=gene_id, value=dictionary
     dictionary: keys ='sequence_raw','positions_infos','positions_indels_probabilities','position_deletions','position_insertions', 'position_mismatchs', 'positions_mix', 'positions_low_coverage', 'allele_length','positions_accepted_depth', 'inserted_nuc'
@@ -64,7 +65,7 @@ fai_file[str]:full path to reference.fasta.fai file
 Return
 size[dict]={key = string 'gene_name'; value = integer 'sequence length'} .e.g {'dfr_G': 498}
 """
-def sequence_lengths_for_ref_alleles(fai_file):	
+def sequence_lengths_for_ref_alleles(fai_file):
     size = {}
     with open(fai_file) as fai:
         for line in fai:
@@ -86,7 +87,7 @@ def is_integer(element): ## check if object is integer
 
 """
 Function
-Group pileup file by gene_id (column 1)	and read file line by line	    
+Group pileup file by gene_id (column 1)	and read file line by line
 Input:
 - fasta_file[str]: full path to reference fasta file
 - pileup_file[str]: full path to pileup file
@@ -101,7 +102,7 @@ Input:
 Return
 mpileup_info_hash[dict] = {key = string 'gene_name' ; value = 'results'}
 'results' = dictionary as described in function
-    keys = ['sequence_raw','positions_infos','positions_indels_probabilities','position_deletions','position_insertions','position_mismatchs', 'positions_mix',         'positions_low_coverage', 'allele_length','positions_accepted_depth', 'inserted_nuc']    
+    keys = ['sequence_raw','positions_infos','positions_indels_probabilities','position_deletions','position_insertions','position_mismatchs', 'positions_mix',         'positions_low_coverage', 'allele_length','positions_accepted_depth', 'inserted_nuc']
 """
 def parsing_mpileup(fasta_file,pileup_file,cut_off,minimum_coverage,size,sorted_bam,logger):
     mpileup_info_hash = {}
@@ -111,8 +112,8 @@ def parsing_mpileup(fasta_file,pileup_file,cut_off,minimum_coverage,size,sorted_
         for allele, lines in groupby(pileup_split, itemgetter(0)):#allele dfr_G,  lines # <itertools._grouper object>
             allele_length = size[allele]                  #allele_length e.g. 498
             ## start description of dictionaries defined to collect infos ###
-            position_deletions = {}             # keys(positions) ; values(string = deletion patterns) # 
-            position_insertions = {}            # keys(positions) ; values(string = insertion patterns) # 
+            position_deletions = {}             # keys(positions) ; values(string = deletion patterns) #
+            position_insertions = {}            # keys(positions) ; values(string = insertion patterns) #
             position_mismatchs = {}             # keys(positions) ; values(list = (ref_nuc and modified_nuc) #
             positions_infos = {}                # keys(positions) ; values(integer = number of reads at positions) #
             positions_indels_probabilities = {} # keys(positions) ; values(float = ratio start_end of read) #
@@ -122,33 +123,33 @@ def parsing_mpileup(fasta_file,pileup_file,cut_off,minimum_coverage,size,sorted_
             ## end of description ###
             ## extract infos by nucleotide position and update dictionaries with infos
             for line in lines:
-                details = list(line) 
+                details = list(line)
                 ## ensure that each line contain 6 info columns (allele;position;nuc_ref;total_reads;reads_info;reads_quality): this may change with version of samtools. e.g ['dfr_G', '2', 'T', '55', ',.,.,..,,.,.,,.,.,...,', 'IFFIFFIFFFBFIFFFIFFFIBFFFI']
                 if len(details) == 6:
                     allele_name,position,nuc_ref,total_reads,reads_info,reads_quality = details
                     #e.g. allele_name:dfr_G, position: 2, nuc_ref: T, total_reads: 55, reads_info:,.,.,..,,.,.,,.,.,.. reads_quality;IFFIFFI
-                    
+
 		            ## pileup_extract_information method extract infos from mpileup line by line
                     mapping_type, nuc, nb_reads,ins_sep,insert_pattern,insert_nb,del_sep,deletion_pattern,del_nb,big_indels_indicator,position_mix_det = pileup_extract_information(nuc_ref.upper(), reads_info, reads_quality, allele, allele_length, int(position),total_reads,cut_off,minimum_coverage)
-		   
+
                     if len(position_mix_det) > 0:
-                        positions_mix[int(position)] = position_mix_det                
+                        positions_mix[int(position)] = position_mix_det
                     if mapping_type == 'match' or mapping_type == 'mismatch' or mapping_type == 'mix' or mapping_type == 'deletion':
                         positions_infos[int(position)] = int(nb_reads)
                     if  mapping_type == 'low_coverage':
                         positions_low_coverage[int(position)] = '$'
-                    if mapping_type == 'mismatch' or mapping_type == 'mix': 
+                    if mapping_type == 'mismatch' or mapping_type == 'mix':
                         position_mismatchs[int(position)] = [nuc_ref,nuc]
-                    if insert_pattern != 0:                        
+                    if insert_pattern != 0:
                         position_insertions[int(position)] = insert_pattern
                     if deletion_pattern != 0:
                         position_deletions[int(position)] = deletion_pattern
                     if big_indels_indicator >= float(50):
                         if int(position) != 1 and int(position) != allele_length:
-                            positions_indels_probabilities[int(position)] = str(nb_reads) + ":" + str(big_indels_indicator)        
+                            positions_indels_probabilities[int(position)] = str(nb_reads) + ":" + str(big_indels_indicator)
                     sequence_raw[int(position)] = nuc
                 else:
-                    log_writer.info_header(logger,"SAMtools version 0.1.18 need to be used")
+                    gf_utils.info_header(logger,"SAMtools version 0.1.18 need to be used")
                     sys.exit(1)
             ### refine mpileup infos ###
             if len(positions_infos) != 0:
@@ -159,36 +160,36 @@ def parsing_mpileup(fasta_file,pileup_file,cut_off,minimum_coverage,size,sorted_
                 ## remove all positions_infos if number of reads is less than accepted_reads_depth:
                 positions_with_accepted_depth = dict([(x,positions_infos[x]) for x in positions_infos if int(positions_infos[x]) > accepted_reads_depth])
                 total_positions = range(1,allele_length +1)
-                info_per_allele = {}      
+                info_per_allele = {}
                 if len(positions_with_accepted_depth) != 0:
                     ## update_with deletion info
-                    position_infos_up,seq_raw_u1 = update_infos_with_deletions(positions_infos,sequence_raw,position_deletions,positions_with_accepted_depth,total_positions)               
+                    position_infos_up,seq_raw_u1 = update_infos_with_deletions(positions_infos,sequence_raw,position_deletions,positions_with_accepted_depth,total_positions)
                     ## flag positions with no coverage in sequence_raw
-                    seq_raw_u2 = update_infos_with_coverage(seq_raw_u1,total_positions,positions_with_accepted_depth)                    
+                    seq_raw_u2 = update_infos_with_coverage(seq_raw_u1,total_positions,positions_with_accepted_depth)
                     ## add sequences at begining/end if info for these regions are missing in mpileup
-                    positions_with_accepted_depth_up,position_mismatchs_up,seq_raw_3,positions_indels_probabilities_up = complete_missing_seq(fasta_file,positions_with_accepted_depth,position_mismatchs,positions_indels_probabilities,allele,allele_length,seq_raw_u2,sorted_bam)                   
+                    positions_with_accepted_depth_up,position_mismatchs_up,seq_raw_3,positions_indels_probabilities_up = complete_missing_seq(fasta_file,positions_with_accepted_depth,position_mismatchs,positions_indels_probabilities,allele,allele_length,seq_raw_u2,sorted_bam)
                     ## update_with deletion info
                     sequence_raw_up,total_inserted_nuc = updated_infos_with_insertions(positions_with_accepted_depth_up,position_insertions,seq_raw_3)
                     ## flag positions with no coverage in positions_with_accepted_depth_up
-                    for tot_pos in total_positions: 
+                    for tot_pos in total_positions:
                         if positions_with_accepted_depth_up.has_key(tot_pos):
                             pass
                         else:
                             positions_with_accepted_depth_up[int(tot_pos)] = '$'
-                            
-                    ## start description of dictionaries to be reported for each allele ###    
+
+                    ## start description of dictionaries to be reported for each allele ###
                     info_per_allele['sequence_raw'] = sequence_raw_up
                     info_per_allele['positions_infos'] = position_infos_up
                     info_per_allele['positions_indels_probabilities'] = positions_indels_probabilities_up
                     info_per_allele['position_deletions'] = position_deletions
                     info_per_allele['position_insertions'] = position_insertions
-                    info_per_allele['position_mismatchs'] = position_mismatchs_up            
+                    info_per_allele['position_mismatchs'] = position_mismatchs_up
                     info_per_allele['positions_mix'] = positions_mix
                     info_per_allele['positions_low_coverage'] = positions_low_coverage
                     info_per_allele['allele_length'] = allele_length
                     info_per_allele['positions_accepted_depth'] = positions_with_accepted_depth_up
-                    info_per_allele['inserted_nuc'] = total_inserted_nuc                   
-                mpileup_info_hash[allele] = info_per_allele		
+                    info_per_allele['inserted_nuc'] = total_inserted_nuc
+                mpileup_info_hash[allele] = info_per_allele
     return mpileup_info_hash
 
 
@@ -203,7 +204,7 @@ Input:
 -read_info_ori [str]: eg. ',.,.,..,,.,.,,.,.,...,'
 -qualities[str]: base qualitities eg.'IFFIFFIFFFBFIFFFIFFFIBFFFI'
 -allele[str]: gene_id eg. dfr_G
--allele_length[integer]:allele length. 
+-allele_length[integer]:allele length.
 -position[str]: eg. '2'
 -pileup_nb_reads[str]:number of reads at this position position eg.'55'
 -cut_off[str]: default '84:50'
@@ -218,7 +219,7 @@ eg. ['match','A',78,ins,0,0,del,0,0,0.1,{}]
 """
 
 
-def pileup_extract_information(nuc_ref, read_info_ori, qualities, allele, allele_length, position, pileup_nb_reads,cut_off,minimum_coverage):	 
+def pileup_extract_information(nuc_ref, read_info_ori, qualities, allele, allele_length, position, pileup_nb_reads,cut_off,minimum_coverage):
     """
     details of read info symbols in mpileup file eg. ( "..,,,+1G...,-2GG,,^,^..^,,^A,^C,,,,$,$,)
     '.' => match to nt reference, read_forward
@@ -229,27 +230,27 @@ def pileup_extract_information(nuc_ref, read_info_ori, qualities, allele, allele
     '*' = > deletion
     '^1'or other integers /'^A'/'^C'/'^G'/'^T' => mapping quality score
     '+1G' => insertion of G at next position
-    -2GG => deletion of two Gs at the next position   
+    -2GG => deletion of two Gs at the next position
     """
     ## count '^' and '$' in read info
-    ## high ratio => indicate large insertion or deletion if not located at begining/end of ref seq     
+    ## high ratio => indicate large insertion or deletion if not located at begining/end of ref seq
     nb_start_end_info = len([elem for elem in list(read_info_ori) if re.match(r'[\$]',elem) != None or re.match(r'[\^]',elem) != None])
     ratio_start_end = round(float(nb_start_end_info)*float(100)/float(pileup_nb_reads),2) # percentage of ^ and $, compare to the total number of reads.
-    
+
     ## resub mapping quality score ^A,^T,^C,^G by '^', therefore keeping start of read info ##
     read_info = re.sub('[\^][\*ATCGatcg]','^',read_info_ori) # subtitute to '^' followed by ATCGatcg with ^,
     ## uppercase string in reads_info and split into list (low case nucleotide may exist in reference)
     reads_info_list = list(read_info.upper())
-    
+
     ## extract indel patterns [+/-][integer][ACTGxn] ##
-    reads_info_modif_1 = combine_consecutive_integers_in_list(reads_info_list) 
-    read_parsed = combine_indels_pattern(reads_info_modif_1) #  
-    
+    reads_info_modif_1 = combine_consecutive_integers_in_list(reads_info_list)
+    read_parsed = combine_indels_pattern(reads_info_modif_1) #
+
     ## group read info per types (deletions,insertions,others)##
-    deletions = [elem for elem in read_parsed if re.match(r'[-][\d]',elem) != None] 
-    insertions = [elem for elem in read_parsed if re.match(r'[\+][\d]',elem) != None]  
-    reads_per_types = [elem for elem in read_parsed if re.match(r'[\*\.,ACTGactg]',elem) != None] 
-    
+    deletions = [elem for elem in read_parsed if re.match(r'[-][\d]',elem) != None]
+    insertions = [elem for elem in read_parsed if re.match(r'[\+][\d]',elem) != None]
+    reads_per_types = [elem for elem in read_parsed if re.match(r'[\*\.,ACTGactg]',elem) != None]
+
     ## filtering reads based on mapping quality and replacing reverse ',' by forward '.'##
     reads_high_quality = []
     for x,y in zip(reads_per_types,qualities): #NO QUALITY FOR DELETION, THEREFOR ONLY CALCULATE QUALITY FOR MATCH, SNP OR * ##qualities - FFFFIIFFIIIIIIIBFF
@@ -259,7 +260,7 @@ def pileup_extract_information(nuc_ref, read_info_ori, qualities, allele, allele
             else:
                 reads_high_quality.append(x)      #else keep  snp, or *
     nb_high_quality_reads = len(reads_high_quality)
-        
+
     ## cut_off values by default:'84:50', can be modified using argument -c (cut_off)##
     ## first value cut off for match, substitutions => reported if reads indicate two nucleotides in proportion between 16 and 84 %
     ## second value cut off for indels => indels are reported if > 50% of reads indicate so
@@ -268,18 +269,18 @@ def pileup_extract_information(nuc_ref, read_info_ori, qualities, allele, allele
     cut_off_bottom = float(1) - cut_off_top
     indels_cut_off = round(float(values[1])/float(100),2)
     results = []
-    mix_info = {}    
-    
+    mix_info = {}
+
     if nb_high_quality_reads > 1:
         # count nb of indel patterns
         insertions_types = Counter(insertions) ## return dictionary=(key=type, value=nb_type), eg.{+1G=>54, +2GA=>1}
         ins_pattern_seq,ins_nb_pattern,ratio_pattern_insertion = extract_most_frequent_indels_pattern(insertions_types,pileup_nb_reads) # pileup_nb_reads = number of reads in the aligned
         deletion_types = Counter(deletions) ## return dictionary=(key=type,value=nb_type), eg.{-1C=>35}
         del_pattern_seq,del_nb_pattern,ratio_pattern_deletion = extract_most_frequent_indels_pattern(deletion_types,pileup_nb_reads)
-        
+
         ## high quality reads are used at this stage ##
-        
-        ## count remaining nb of matchs, mismatchs, deletions(*) 
+
+        ## count remaining nb of matchs, mismatchs, deletions(*)
         total_reads_types = Counter(reads_high_quality) ## return dictionary=(key=type, value=nb_type), eg.{'.'=>75, 'A'=>2, 'C'=>1}
         nb_match = total_reads_types['.']
         mismatch_types = dict([(x,total_reads_types[x]) for x in total_reads_types if re.match(r'[ATCG]',x) != None])
@@ -290,7 +291,7 @@ def pileup_extract_information(nuc_ref, read_info_ori, qualities, allele, allele
         ratio_match = round(float(nb_match)/float(nb_high_quality_reads),2)
         ratio_mismatch = round(float(nb_mismatch)/float(nb_high_quality_reads),2)
         ratio_deletion = round(float(nb_deletion)/float(nb_high_quality_reads),2)
-        
+
         ## return deduced info based on ratio/cut off value
         if ratio_match >= cut_off_top:
             results.extend(['match',nuc_ref, nb_match])
@@ -302,7 +303,7 @@ def pileup_extract_information(nuc_ref, read_info_ori, qualities, allele, allele
             elif ratio_deletion >= indels_cut_off:
                 results.extend(['deletion','*',nb_deletion])
             elif ratio_mismatch < cut_off_top and ratio_deletion < indels_cut_off:
-                results.extend(['mix','N',nb_high_quality_reads])                    
+                results.extend(['mix','N',nb_high_quality_reads])
         else:
             if ratio_deletion > indels_cut_off:
                 results.extend(['deletion','*',nb_deletion])
@@ -316,19 +317,19 @@ def pileup_extract_information(nuc_ref, read_info_ori, qualities, allele, allele
                     results.extend(['mix',predicted_nuc, nb_high_quality_reads])
                 else:
                     results.extend(['mix','N', nb_high_quality_reads])
-        
+
         if ratio_pattern_insertion < indels_cut_off:
             results.extend(['ins', 0, 0])
         else:
             results.extend(['ins',ins_pattern_seq,ins_nb_pattern])
-            
+
         if ratio_pattern_deletion < indels_cut_off:
             results.extend(['del', 0, 0])
         else:
             results.extend(['del',del_pattern_seq,del_nb_pattern])
-        
+
         results.append(ratio_start_end)
-        results.append(mix_info)  
+        results.append(mix_info)
     else:
         results.extend(['low_coverage','$',nb_high_quality_reads,'ins', 0, 0,'del', 0, 0])
         results.append(ratio_start_end)
@@ -348,7 +349,7 @@ update sequence_raw[dict]: key[int]= position; value= base at a  position eg seq
 update positions_infos[dict]: key[int]= position ; value = depth of coverage {5:48,6;1} with deletion {5: -1T}=> {5: 48; 6; "*"}
 """
 def update_infos_with_deletions(position_infos_ori,sequence_raw_ori,position_deletions,positions_with_accepted_depth,total_positions):
-    positions_infos = position_infos_ori 
+    positions_infos = position_infos_ori
     sequence_raw = sequence_raw_ori
     for position in position_deletions:
         if positions_with_accepted_depth.has_key(position):
@@ -359,7 +360,7 @@ def update_infos_with_deletions(position_infos_ori,sequence_raw_ori,position_del
             nb_position_to_delete = range(range_start,range_end)
             for pos in nb_position_to_delete:
                 sequence_raw[int(pos)] = '*'
-                positions_infos[int(pos)] = '*'	
+                positions_infos[int(pos)] = '*'
     return positions_infos, sequence_raw
 """
 Function
@@ -372,9 +373,9 @@ dictionary_updated[dict]: key[int]=position and value=base
 e.g. {1: 'A', 2: 'T', 3: 'G', ,...} = > e.g. {1: 'A', 2: '$', 3: 'G', ,...}
 
 """
-def update_infos_with_coverage(dictionary,list_total_positions,positions_with_accepted_depth):   
-    dictionary_updated = dictionary 
-    for tot_pos in list_total_positions: 
+def update_infos_with_coverage(dictionary,list_total_positions,positions_with_accepted_depth):
+    dictionary_updated = dictionary
+    for tot_pos in list_total_positions:
         if dictionary.has_key(tot_pos):
             if positions_with_accepted_depth.has_key(tot_pos):
                 pass
@@ -399,16 +400,16 @@ Input:
 Return
 updated dictionaries
 """
-def complete_missing_seq(fasta_file,positions_with_accepted_depth_ori,position_mismatchs_ori,positions_indels_probabilities_ori,allele,allele_length,sequence_raw_ori,sorted_bam):   
-    positions_with_accepted_depth = positions_with_accepted_depth_ori  
-    position_mismatchs = position_mismatchs_ori 
-    positions_indels_probabilities = positions_indels_probabilities_ori 
-    sequence_raw = sequence_raw_ori 
- 
-    target_biosequence_list = []           
+def complete_missing_seq(fasta_file,positions_with_accepted_depth_ori,position_mismatchs_ori,positions_indels_probabilities_ori,allele,allele_length,sequence_raw_ori,sorted_bam):
+    positions_with_accepted_depth = positions_with_accepted_depth_ori
+    position_mismatchs = position_mismatchs_ori
+    positions_indels_probabilities = positions_indels_probabilities_ori
+    sequence_raw = sequence_raw_ori
+
+    target_biosequence_list = []
     for key in sorted(sequence_raw.iterkeys()):
-        target_biosequence_list.append(sequence_raw[key])   
-    
+        target_biosequence_list.append(sequence_raw[key])
+
     last_mapped_position =  max(sorted(positions_with_accepted_depth.keys()))
     first_mapped_position =  min(sorted(positions_with_accepted_depth.keys()))
     ## add missing sequence at the begining if missing
@@ -416,7 +417,7 @@ def complete_missing_seq(fasta_file,positions_with_accepted_depth_ori,position_m
         target_biosequence_string = ''.join([elem for elem in target_biosequence_list])
         pattern_search = re.findall(r'[ACTG]{7,10}',target_biosequence_string)[0] #first 7 to 10 consecutive nuc in predicted sequence to search reads#
         pattern_search_index = target_biosequence_string.find(pattern_search)
-        missing_positions = pattern_search_index 
+        missing_positions = pattern_search_index
         if positions_indels_probabilities.has_key(first_mapped_position):
             del positions_indels_probabilities[first_mapped_position]
         missing_nuc, nb_reads = pysam_search(sorted_bam,allele,pattern_search,pattern_search_index,pattern_search_index + 10, missing_positions)
@@ -430,7 +431,7 @@ def complete_missing_seq(fasta_file,positions_with_accepted_depth_ori,position_m
                 sequence_raw[x] = list(missing_nuc)[x-1]
         else:
             pass
-    ## add sequences at end of gene if missing  
+    ## add sequences at end of gene if missing
     if last_mapped_position != allele_length and last_mapped_position > allele_length - 20 and float(len(positions_with_accepted_depth.keys())) > float(allele_length*0.8):
         target_biosequence_string = ''.join([elem for elem in target_biosequence_list])
         pattern_search = re.findall(r'[ACTG]{7,10}',target_biosequence_string)[-1] #last 7 to 10 consecutive nuc in predicted sequence to search reads#
@@ -443,7 +444,7 @@ def complete_missing_seq(fasta_file,positions_with_accepted_depth_ori,position_m
         if missing_nuc != 'nil':
             add_mism = check_missing_nuc_mismatch(fasta_file,allele,pattern_search_index_end,allele_length,missing_nuc)
             add_mism_checked = dict([(x,add_mism[x]) for x in add_mism if add_mism[x][0] != add_mism[x][1]])
-            position_mismatchs.update(add_mism_checked)                            
+            position_mismatchs.update(add_mism_checked)
             added_positions = range(pattern_search_index_end+1,pattern_search_index_end+1+missing_positions)
             combined_positions_missing_nuc = zip(added_positions,list(missing_nuc))
             for y in combined_positions_missing_nuc:
@@ -460,7 +461,7 @@ from complete_missing_seq function: use pysam to extract the missing nucleotides
 Input:
 - bam_file[str]: full path to the sorted bam file
 - allele[str]: the allele name (e.g. AROC_214)
-- pattern[str]: The pattern of sequence to be search in extracted reads (last mapped positions) 
+- pattern[str]: The pattern of sequence to be search in extracted reads (last mapped positions)
 - map_1[int]: start position = first mapped position
 - map_2[int]: end position = start position -/+ 10 if missing mapped positions are at end/begining of the gene
 - missing_positions[int]: nb of missing positions from mapping info
@@ -469,7 +470,7 @@ Return
 nuc_seq[str]: missed nucleotide
 nb_reads[integer]: nb of reads form which missing nt were extracted
 """
-def pysam_search(bam_file,allele,pattern,map_1,map_2,missing_positions):	
+def pysam_search(bam_file,allele,pattern,map_1,map_2,missing_positions):
     length_pattern = len(pattern)
     seq_to_add = []
     seq_mapped_read = []
@@ -498,7 +499,7 @@ def pysam_search(bam_file,allele,pattern,map_1,map_2,missing_positions):
                     seq_to_add.append(str(substring))
             else:
                 substring = seq[match_postion + length_pattern :match_postion + length_pattern + missing_positions]
-                seq_to_add.append(str(substring))  
+                seq_to_add.append(str(substring))
     missing_seq = Counter(seq_to_add)
     if len(missing_seq) != 0:
         nuc_seq = (missing_seq).most_common(1)[0][0]
@@ -554,7 +555,7 @@ example
 => combine_consecutive_integers_in_list([a,a,c,1,2,d,e,1,f])
 => [a,a,c,12,d,e,1,f]
 """
-def combine_consecutive_integers_in_list(list_of_elem):	    
+def combine_consecutive_integers_in_list(list_of_elem):
     output = []
     i = 0
     while len(list_of_elem) > 1:
@@ -580,7 +581,7 @@ example
 => [a,a,+1c,a,a,-10cccccccccc,a,a,a]
 """
 def combine_indels_pattern(list_of_elem):
-    index_numbers = []    
+    index_numbers = []
     for (index,item) in enumerate(list_of_elem):
         if is_integer(item) == True:
             index_numbers.append(index)
@@ -600,11 +601,11 @@ example: most common_pattern = +1G
          count = 50
          ratio = 0.98
 """
-def extract_most_frequent_indels_pattern(indels_types,pileup_nb_reads): 
+def extract_most_frequent_indels_pattern(indels_types,pileup_nb_reads):
     if len(indels_types) == 0:
         return 0,0,0
     else:
-        for pattern,count in indels_types.most_common(1):      
+        for pattern,count in indels_types.most_common(1):
             ratio_insertion = round(float(count)/float(pileup_nb_reads),2)
             return pattern,count,ratio_insertion
 """
@@ -638,7 +639,7 @@ Assign iupac code for nucleotide mix e.g. A and G => R
 Input: list_two_nucleotide[list]: eg. ['A','T']
 Return: code[0][str]: corresponding iupac base e.g 'R'
 """
-def iupac_nucleotide_hash_code(list_two_nucleotide):	
+def iupac_nucleotide_hash_code(list_two_nucleotide):
     code = []
     list_two_nucleotide.sort()
     if list_two_nucleotide[0] == 'A':
@@ -670,7 +671,7 @@ Function
 from complete_missing_seq function: check nt in the missing sequence extracted using pysam for match/mismatch compared to reference
 -fasta_file[str] : path to reference fasta
 -allele = allele_id
--first_position[integer] = start position 
+-first_position[integer] = start position
 -last_position[integer] = end position
 -missing_nuc[str] = extracted nucleotides
 Return
@@ -693,10 +694,3 @@ def check_missing_nuc_mismatch(fasta_file,allele,first_position,last_position,mi
                 else:
                     report[first_position + index +1] = [element[0],element[1]]
     return report
-
-
-
-
-
-
-

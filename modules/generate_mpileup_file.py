@@ -9,24 +9,25 @@ for module_folder_path in module_folder_paths:
 	if module_folder not in sys.path:
 		sys.path.insert(1, module_folder)
 
-from utility_functions import *
-import log_writer
+import gf_utils
+# from utility_functions import *
+## import log_writer
 
 
 
 """
 Function
 Index reference file using bowtie2-build in the same directory of the reference fasta file
-Input:  
+Input:
 - fasta_file[str]:full path to reference fasta file
 - logger: python class logging.Logger created with stderr and stdout paths
 """
 def index_reference(fasta_file,logger):
-    log_writer.info_header(logger, "index reference file using bowtie2")
+    gf_utils.info_header(logger, "index reference file using bowtie2")
     process = subprocess.Popen(['bowtie2-build', '-f', fasta_file, fasta_file], stderr=subprocess.PIPE, stdout=subprocess.PIPE)
     process.wait()
-    log_writer.log_process(logger, process, log_error_to = "bowtie2: reference indexing successfully completed")
-    log_writer.info_header(logger,'bowtie2: reference indexing successfully completed')
+    gf_utils.log_process(logger, process, log_error_to = "bowtie2: reference indexing successfully completed")
+    gf_utils.info_header(logger,'bowtie2: reference indexing successfully completed')
 
 """
 Function
@@ -39,13 +40,13 @@ Input:
 def samtools_faidx(fasta_file,logger):
     process = subprocess.Popen(['samtools', 'faidx', fasta_file], stderr=subprocess.PIPE, stdout=subprocess.PIPE)
     process.wait()
-    log_writer.log_process(logger, process, log_error_to = "info")
+    gf_utils.log_process(logger, process, log_error_to = "info")
     fai_index = fasta_file + '.fai'
     if os.path.getsize(fai_index) > 0:
-        log_writer.info_header(logger,'samtootls faidx sucsessfully created')
+        gf_utils.info_header(logger,'samtootls faidx sucsessfully created')
     else:
-        log_writer.info_header(logger,'samtootls faidx output is empty, check reference fasta format')
-        sys.exit(1) 
+        gf_utils.info_header(logger,'samtootls faidx output is empty, check reference fasta format')
+        sys.exit(1)
 
 """
 Function
@@ -65,11 +66,11 @@ Input:
 """
 def run_bowtie_on_indices(fasta_file,forward_fastq,reverse_fastq,outdir,workflow_name,version,prefix,bowtie_options,logger):
     sam_output = outdir + "/tmp/" + prefix + '.sam'
-    log_writer.info_header(logger,'running bowtie command')
+    gf_utils.info_header(logger,'running bowtie command')
     bowtie_options_combined = ' '.join(bowtie_options) # bowtie_option is a list need to be joined by space before assigned to the command line
     process = subprocess.Popen(['bowtie2','-1', forward_fastq, '-2', reverse_fastq,'-x',fasta_file,'-S', sam_output, bowtie_options_combined],stderr=subprocess.PIPE, stdout=subprocess.PIPE)
     process.wait()
-    log_writer.info_header(logger,'SAM file successfully created')
+    gf_utils.info_header(logger,'SAM file successfully created')
 
 """
 Function
@@ -95,7 +96,7 @@ def modify_bowtie_sam(path_sam_folder,prefix,logger):
                 sam_mod.write('\t'.join([fields[0], str(flag)] + fields[2:]))
             else:
                 sam_mod.write(line)
-    log_writer.info_header(logger,'SAM file successfully mofified to unset secondary alignment')
+    gf_utils.info_header(logger,'SAM file successfully mofified to unset secondary alignment')
 
 """
 Function
@@ -116,30 +117,30 @@ def run_samtools_bam(path_to_tmp_file,fasta_file,prefix,logger):
     bam_sorted_output = path_to_tmp_file + "/" + prefix + ".sorted"
     bam_sorted_index_output = bam_sorted_output + ".bam"
     pileup_output = path_to_tmp_file + "/" + prefix + '.pileup'
-    
-    log_writer.info_header(logger,'converting .sam to .bam')
+
+    gf_utils.info_header(logger,'converting .sam to .bam')
     process = subprocess.Popen(['samtools', 'view', '-b', '-o', bam_output, '-q', '1', '-S', sam_output + '.mod'],stderr=subprocess.PIPE, stdout=subprocess.PIPE)
     process.wait()
-    log_writer.log_process(logger, process, log_error_to = "info")
-    
-    log_writer.info_header(logger,'samtools sorting .bam file')
+    gf_utils.log_process(logger, process, log_error_to = "info")
+
+    gf_utils.info_header(logger,'samtools sorting .bam file')
     process = subprocess.Popen(['samtools', 'sort', bam_output, bam_sorted_output],stderr=subprocess.PIPE, stdout=subprocess.PIPE)
     process.wait()
-    log_writer.log_process(logger, process, log_error_to = "info")
-    
-    log_writer.info_header(logger,'samtools indexing .bam file')
+    gf_utils.log_process(logger, process, log_error_to = "info")
+
+    gf_utils.info_header(logger,'samtools indexing .bam file')
     process = subprocess.Popen(['samtools', 'index', bam_sorted_index_output],stderr=subprocess.PIPE, stdout=subprocess.PIPE)
     process.wait()
-    log_writer.log_process(logger, process, log_error_to = "info")
-    
-    log_writer.info_header(logger,'generating mpileup file')
-    log_writer.info_header(logger,' '.join(map(str,['samtools', 'mpileup', '-A', '-B', '-f', fasta_file, bam_sorted_index_output])))
+    gf_utils.log_process(logger, process, log_error_to = "info")
+
+    gf_utils.info_header(logger,'generating mpileup file')
+    gf_utils.info_header(logger,' '.join(map(str,['samtools', 'mpileup', '-A', '-B', '-f', fasta_file, bam_sorted_index_output])))
     with open(pileup_output, 'w') as sam_pileup:
         process = subprocess.Popen(['samtools', 'mpileup', '-A', '-B', '-f', fasta_file, bam_sorted_index_output], stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         for x in process.stdout:
             sam_pileup.write(x)
         process.wait()
-        log_writer.log_process(logger, process, log_error_to = "couldn't generate mpileup file")
+        gf_utils.log_process(logger, process, log_error_to = "couldn't generate mpileup file")
 
 """
 Function
@@ -156,11 +157,7 @@ Input:
 - logger: python class logging.Logger created with stderr and stdout paths
 
 """
-def generate_mpileup(path_to_tmp_file,fasta_file,forward_fastq,reverse_fastq,outdir,workflow_name,version,ids,bowtie_options,logger):   
+def generate_mpileup(path_to_tmp_file,fasta_file,forward_fastq,reverse_fastq,outdir,workflow_name,version,ids,bowtie_options,logger):
     run_bowtie_on_indices(fasta_file,forward_fastq,reverse_fastq,outdir,workflow_name,version,ids,bowtie_options,logger)
     modify_bowtie_sam(path_to_tmp_file,ids,logger)
     run_samtools_bam(path_to_tmp_file,fasta_file,ids,logger)
-
-
-    
-    
